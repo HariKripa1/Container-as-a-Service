@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Containers(models.Model):
+class Container(models.Model):
     APPLICATION_NODE_JS = 'APPLICATION_NODE_JS'
     APPLICATION_CHOICES = (
         (APPLICATION_NODE_JS,'Node JS'),
@@ -62,7 +62,7 @@ class RequestQueue(models.Model):
         (STATUS_DELETED,'Delete'),
         (STATUS_MODIFIED,'Modified')
     )
-    container_id = models.ForeignKey(Containers, on_delete=models.CASCADE)
+    container_id = models.ForeignKey(Container, on_delete=models.CASCADE)
     status=models.CharField(max_length=100,choices=STATUS_CHOICES)
     creation_date = models.DateTimeField('date created')
     last_update_date = models.DateTimeField('date updated')
