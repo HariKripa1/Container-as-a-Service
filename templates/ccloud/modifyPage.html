@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <p> Modify container  {{cid}} </p>
+  <form id="modifyPage" action="/ccloud/modifyPage/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" name="redeploy" value="redeploy" /> 
+  </form>
+  </body>
+</html>

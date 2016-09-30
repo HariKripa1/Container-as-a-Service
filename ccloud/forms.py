@@ -10,3 +10,8 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'password')
+class AddPage(forms.Form):
+    giturl = forms.CharField(label='githuburl', max_length=500)
+    
+class ModifyPage(forms.Form):
+    giturl = forms.CharField(label='githuburl', max_length=500)  

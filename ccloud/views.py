@@ -7,8 +7,10 @@ from .forms import NameForm, UserForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
-
+from django.shortcuts import render
+from .forms import NameForm
+from .forms import AddPage
+from .forms import ModifyPage
 def index(request):
     return render(request,'ccloud/index.html')
 
@@ -24,7 +26,7 @@ def get_name(request):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return HttpResponseRedirect('/thanks/')
+            return HttpResponseRedirect('/ccloud/thanks/')
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -101,5 +103,49 @@ def user_logout(request):
 
     # Take the user back to the homepage.
     return HttpResponseRedirect('/ccloud/')
+def thanks(request):
+    message = "Successfully submitted"
+    context = {'message' : message}
+    return render(request, 'ccloud/thanks.html', context)
 
+def getMainform(request):
+    containerId = ['1','2','3']
+    containerNames = ['container 1','container 2','container 3']        
+    return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
+
+def getAddPage(request):
+    form = AddPage(request.POST)
+    if form.is_valid():
+            # add in db
+            form.cleaned_data['giturl']
+            message = "add request sent for "+form.cleaned_data['giturl']
+            context = {'message' : message}
+            return render(request, 'ccloud/thanks.html',context)     
+    else:
+        form = AddPage()                
+    return render(request, 'ccloud/addPage.html', {'form': form})
+
+def getModifyPage(request):    
+    form = ModifyPage(request.POST)
+    if "Redeploy" in request.POST:         
+        c_id = request.POST['cid']
+        context = {'cid' : c_id}
+        form = ModifyPage()            
+        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id})
+    elif "Delete" in request.POST:
+        c_id = request.POST['cid']
+        message = "Deletion request sent for "+c_id
+        context = {'message' : message}
+        return render(request, 'ccloud/thanks.html', context)
+    else:
+        if form.is_valid():
+            # add in db
+            form.cleaned_data['giturl']                
+            message = "modification request sent for "+form.cleaned_data['giturl']
+            context = {'message' : message}                
+            return render(request, 'ccloud/thanks.html',context) 
+        else:
+            message = " error "
+            context = {'message' : message}
+    return render(request, 'ccloud/thanks.html', context)
 

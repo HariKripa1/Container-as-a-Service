@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>Container List</title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <p> Container List </p>    
+    <form id="addPage" action="/ccloud/addPage/" method="get">
+    {% csrf_token %}
+    <div>
+    <input type="submit" name="Addcontainer" value="Add container" />
+    </div>
+    </form>
+    <form id="delete" action="/ccloud/modifyPage/" method="post">
+    {% csrf_token %}
+    <div>
+    <table>
+        <tr><td>Container ID</td><td>Container Name</td><td></td><td></td></tr>
+        {% for i, j in list %}
+            <tr> 
+                <td> <input type="radio" name="cid" value="{{ i }}">{{ i }}</td>                
+                <td> {{ j }} </td>                 
+            </tr>        
+        {% endfor %}
+        <td><input type="submit" name="Redeploy" id="Redeploy" value="Redeploy" /></td>
+        <td><input type="submit" name="Delete" id="Delete" value="Delete" /></td>
+        </table>
+    </div>
+    </form>
+  </body>
+</html>
