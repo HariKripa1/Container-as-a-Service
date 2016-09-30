@@ -5,11 +5,16 @@
     <style></style>
   </head>
   <body>
-  <p> Modify container  {{cid}} </p>
-  <form id="modifyPage" action="/ccloud/modifyPage/" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" name="redeploy" value="redeploy" /> 
-  </form>
+  <p> Modify container {{cid}} </p>  
+  {% if modifyflg %}
+   <strong>Request sent for container modification!! </strong>
+   <a href="/ccloud/mainPage">Return to the homepage.</a><br />
+  {% else %}
+    <form id="modifyPage" action="/ccloud/modifyPage/" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" name="redeploy" value="Redeploy" /> 
+    </form>
+  {% endif %}
   </body>
 </html>
