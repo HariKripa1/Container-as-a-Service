@@ -11,7 +11,13 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ('username', 'email', 'password')
 class AddPage(forms.Form):
-    giturl = forms.CharField(label='githuburl', max_length=500)
+    containername = forms.CharField(label='Container Name', max_length=500)
+    giturl = forms.CharField(label='GIT Hub URL', max_length=500)
+    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False)
+    application = forms.ChoiceField(choices=[(1,'Node js')])
     
 class ModifyPage(forms.Form):
-    giturl = forms.CharField(label='githuburl', max_length=500)  
+    containername = forms.CharField(label='Container Name', max_length=500)
+    giturl = forms.CharField(label='GIT Hub URL', max_length=500)
+    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False)
+    application = forms.ChoiceField(choices=[(1,'Node js')])

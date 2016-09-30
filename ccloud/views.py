@@ -115,37 +115,45 @@ def getMainform(request):
 
 def getAddPage(request):
     form = AddPage(request.POST)
+    print('fasdsas');
+    addflg = False;
     if form.is_valid():
             # add in db
-            form.cleaned_data['giturl']
+            print('addd page')
+            form.cleaned_data['giturl']            
             message = "add request sent for "+form.cleaned_data['giturl']
             context = {'message' : message}
-            return render(request, 'ccloud/thanks.html',context)     
+            addflg = True;
+            return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg})
     else:
+        print('add page 2')
         form = AddPage()                
-    return render(request, 'ccloud/addPage.html', {'form': form})
+    return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg})
 
 def getModifyPage(request):    
     form = ModifyPage(request.POST)
+    modifyflg = False;
+    c_id = '';
     if "Redeploy" in request.POST:         
         c_id = request.POST['cid']
         context = {'cid' : c_id}
         form = ModifyPage()            
-        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id})
+        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg})
     elif "Delete" in request.POST:
         c_id = request.POST['cid']
         message = "Deletion request sent for "+c_id
-        context = {'message' : message}
+        context = {'message' : message, 'modifyflg' : modifyflg}    
         return render(request, 'ccloud/thanks.html', context)
     else:
         if form.is_valid():
             # add in db
             form.cleaned_data['giturl']                
             message = "modification request sent for "+form.cleaned_data['giturl']
-            context = {'message' : message}                
-            return render(request, 'ccloud/thanks.html',context) 
+            context = {'message' : message, 'modifyflg' : modifyflg}    
+            modifyflg = True;
+            return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg})
         else:
             message = " error "
-            context = {'message' : message}
+            context = {'message' : message, 'modifyflg' : modifyflg}
     return render(request, 'ccloud/thanks.html', context)
 
