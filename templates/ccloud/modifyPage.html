@@ -7,12 +7,13 @@
   <body>
   <p> Modify container {{cid}} </p>  
   {% if modifyflg %}
-   <strong>Request sent for container modification!! </strong>
+   <strong> {{ delmodflg }} request sent </strong>
    <a href="/ccloud/mainPage">Return to the homepage.</a><br />
   {% else %}
     <form id="modifyPage" action="/ccloud/modifyPage/" method="post">
         {% csrf_token %}
         {{ form.as_p }}
+        <input type="hidden" name="cid" id="cid" value="{{cid}}"></input>
         <input type="submit" name="redeploy" value="Redeploy" /> 
     </form>
   {% endif %}

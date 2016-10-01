@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Container
 
 class NameForm(forms.Form):
     your_name = forms.CharField(label='Your name', max_length=100)
@@ -13,11 +14,11 @@ class UserForm(forms.ModelForm):
 class AddPage(forms.Form):
     containername = forms.CharField(label='Container Name', max_length=500)
     giturl = forms.CharField(label='GIT Hub URL', max_length=500)
-    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False)
-    application = forms.ChoiceField(choices=[(1,'Node js')])
+    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False, required=False)
+    application = forms.ChoiceField(choices=Container.APPLICATION_CHOICES)
     
-class ModifyPage(forms.Form):
+class ModifyPage(forms.Form):    
     containername = forms.CharField(label='Container Name', max_length=500)
     giturl = forms.CharField(label='GIT Hub URL', max_length=500)
-    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False)
-    application = forms.ChoiceField(choices=[(1,'Node js')])
+    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False, required=False)
+    application = forms.ChoiceField(choices=Container.APPLICATION_CHOICES)

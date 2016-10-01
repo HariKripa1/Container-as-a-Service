@@ -5,6 +5,7 @@
     <style></style>
   </head>
   <body>
+  <a href="/ccloud/logout">Logout</a>
   <p> Container List </p>    
     <form id="addPage" action="/ccloud/addPage/" method="get">
     {% csrf_token %}
@@ -14,18 +15,26 @@
     </form>
     <form id="delete" action="/ccloud/modifyPage/" method="post">
     {% csrf_token %}
-    <div>
-    <table>
-        <tr><td>Container ID</td><td>Container Name</td><td></td><td></td></tr>
-        {% for i, j in list %}
+    <div>    
+    {% if container.count == 0 %}
+        <p> No containers available </p>
+    {% else %}
+    <table border=1>
+        <tr><td>Select</td><td>Container ID</td><td>Container Name</td><td>Status</td><td>Container URL</td></tr>
+        {% for c in container %}
             <tr> 
-                <td> <input type="radio" name="cid" value="{{ i }}">{{ i }}</td>                
-                <td> {{ j }} </td>                 
+                <td> <input type="radio" name="cid" value="{{ c.id }}"></td>
+                <td> {{ c.id }}</td>                
+                <td> {{ c.container_name }} </td>  
+                <td> {{ c.status }} </td>
+                <td> {{ c.container_url  }} </td>
             </tr>        
-        {% endfor %}
-        <td><input type="submit" name="Redeploy" id="Redeploy" value="Redeploy" /></td>
-        <td><input type="submit" name="Delete" id="Delete" value="Delete" /></td>
+        {% endfor %}        
         </table>
+        <br/>
+        <input type="submit" name="Redeploy" id="Redeploy" value="Redeploy" />
+        <input type="submit" name="Delete" id="Delete" value="Delete" />
+     {% endif %}   
     </div>
     </form>
   </body>

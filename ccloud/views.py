@@ -11,6 +11,11 @@ from django.shortcuts import render
 from .forms import NameForm
 from .forms import AddPage
 from .forms import ModifyPage
+from .models import Container
+from .models import RequestQueue
+from django.contrib.auth.models import User
+from datetime import datetime
+
 def index(request):
     return render(request,'ccloud/index.html')
 
@@ -85,8 +90,9 @@ def user_login(request):
     	user=authenticate(username=username,password=password)
     	if user:
     		if user.is_active:
-    			login(request,user)
-    			return HttpResponseRedirect('/ccloud/')
+    			login(request,user)    			
+    			request.session['username'] = username
+    			return HttpResponseRedirect('/ccloud/mainPage/')
     		else:
     			return HttpResponse("Your CCloud Account is disabled")
     	else:
@@ -99,6 +105,10 @@ def user_login(request):
 @login_required
 def user_logout(request):
     # Since we know the user is logged in, we can now just log them out.
+    try:
+        del request.session['username']
+    except KeyError:
+        pass
     logout(request)
 
     # Take the user back to the homepage.
@@ -108,22 +118,32 @@ def thanks(request):
     context = {'message' : message}
     return render(request, 'ccloud/thanks.html', context)
 
-def getMainform(request):
-    containerId = ['1','2','3']
-    containerNames = ['container 1','container 2','container 3']        
-    return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
+def getMainform(request):        
+    username=request.session.get('username')
+    user = User.objects.get(username=username)
+    container = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)
+    print(request.session.get('username'))
+    #return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
+    return render(request, 'ccloud/mainPage.html', {'container': container } )
 
 def getAddPage(request):
     form = AddPage(request.POST)
     print('fasdsas');
-    addflg = False;
+    addflg = False;    
+    print(request.session.get('username'))   
+    username=request.session.get('username')
     if form.is_valid():
             # add in db
             print('addd page')
             form.cleaned_data['giturl']            
             message = "add request sent for "+form.cleaned_data['giturl']
             context = {'message' : message}
-            addflg = True;
+            addflg = True; 
+            user = User.objects.get(username=username)
+            container=Container(container_name=form.cleaned_data['containername'],git_url=form.cleaned_data['giturl'],user_id=user,docker_file=form.cleaned_data['dockerfilereq'],application_name=form.cleaned_data['application'],status=Container.STATUS_FORCREATE,container_url='',devstack_container_id='',creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+            container.save()
+            crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORCREATE, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+            crreq.save()
             return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg})
     else:
         print('add page 2')
@@ -134,24 +154,37 @@ def getModifyPage(request):
     form = ModifyPage(request.POST)
     modifyflg = False;
     c_id = '';
+    delmodflg = '';
+    username=request.session.get('username')
     if "Redeploy" in request.POST:         
-        c_id = request.POST['cid']
-        context = {'cid' : c_id}
+        c_id = request.POST['cid']        
         form = ModifyPage()            
         return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg})
     elif "Delete" in request.POST:
         c_id = request.POST['cid']
-        message = "Deletion request sent for "+c_id
-        context = {'message' : message, 'modifyflg' : modifyflg}    
-        return render(request, 'ccloud/thanks.html', context)
+        message = "Deletion request sent for "+c_id        
+        container = Container.objects.filter(id=c_id)
+        container.delete()
+        modifyflg = True;
+        delmodflg = 'Delete'
+        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
     else:
         if form.is_valid():
             # add in db
-            form.cleaned_data['giturl']                
+            form.cleaned_data['giturl']   
+            c_id = request.POST.get('cid', None)
             message = "modification request sent for "+form.cleaned_data['giturl']
             context = {'message' : message, 'modifyflg' : modifyflg}    
             modifyflg = True;
-            return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg})
+            user = User.objects.get(username=username)
+            container = Container.objects.filter(id=c_id)
+            container.delete()
+            container=Container(container_name=form.cleaned_data['containername'],git_url=form.cleaned_data['giturl'],user_id=user,docker_file=form.cleaned_data['dockerfilereq'],application_name=form.cleaned_data['application'],status=Container.STATUS_FORMODIFY,container_url='',devstack_container_id='',creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+            container.save()
+            crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORMODIFY, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+            crreq.save()
+            delmodflg = 'Modify'
+            return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
         else:
             message = " error "
             context = {'message' : message, 'modifyflg' : modifyflg}
