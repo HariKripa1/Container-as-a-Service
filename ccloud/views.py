@@ -203,8 +203,19 @@ def getModifyPage(request):
             message = "modification request sent for "+form.cleaned_data['giturl']
             context = {'message' : message, 'modifyflg' : modifyflg}    
             modifyflg = True;
-            user = User.objects.get(username=username)           
-            container=Container(container_name=form.cleaned_data['containername'],git_url=form.cleaned_data['giturl'],user_id=user,docker_file=form.cleaned_data['dockerfilereq'],application_name=form.cleaned_data['application'],status=Container.STATUS_FORMODIFY,container_url='',devstack_container_id='',creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+            user = User.objects.get(username=username)   
+            container = Container.objects.get(id=c_id)
+            container.container_name=form.cleaned_data['containername']
+            container.git_url=form.cleaned_data['giturl']
+            container.user_id=user
+            container.docker_file=form.cleaned_data['dockerfilereq']
+            container.application_name=form.cleaned_data['application']
+            container.status=Container.STATUS_FORMODIFY
+            container.container_url=''
+            container.devstack_container_id=''
+            container.creation_date=datetime.now()
+            container.last_update_date=datetime.now()
+            container.created_by=username
             container.save()#update instead of insert
             crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORMODIFY, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
             crreq.save()
