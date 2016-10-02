@@ -1,0 +1,21 @@
+from io import BytesIO
+from docker import Client
+dockerfile = '''
+FROM node:argon
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+# Install app dependencies
+COPY package.json /usr/src/app/
+RUN npm install
+# Bundle app source
+COPY . /usr/src/app
+EXPOSE 8080
+CMD [ "npm", "start" ]
+'''
+f = BytesIO(dockerfile.encode('utf-8'))
+cli = Client(base_url='tcp://127.0.0.1:2375')
+response = [line for line in cli.build(
+fileobj=f, rm=True, tag='yourname/volume'
+)]
+response 

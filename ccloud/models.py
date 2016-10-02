@@ -68,5 +68,5 @@ class RequestQueue(models.Model):
     last_update_date = models.DateTimeField('date updated')
     created_by=models.CharField(max_length=100)
     def __str__(self):
-        return self.container_id
+        return str(self.container_id)
 

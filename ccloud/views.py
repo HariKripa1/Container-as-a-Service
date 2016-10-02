@@ -15,6 +15,32 @@ from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
 from datetime import datetime
+import pika
+import sys
+import os
+##get project directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from django.core.wsgi import get_wsgi_application
+##get project parent directory and add to python path using sys.path.append
+SYS_PATH = os.path.dirname(BASE_DIR)
+print SYS_PATH
+if SYS_PATH not in sys.path:
+    sys.path.append(SYS_PATH)
+os.environ['DJANGO_SETTINGS_MODULE'] = 'Caas.settings'
+application = get_wsgi_application()
+
+def send(rid):
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='reqqueue')
+
+    channel.basic_publish(exchange='',
+                        routing_key='reqqueue',
+                        body=rid)
+    print(" [x] Sent 'Hello World!'" + rid)
+    connection.close()
+    return HttpResponseRedirect('/ccloud/thanks/')
 
 def index(request):
     return render(request,'ccloud/index.html')
@@ -144,6 +170,7 @@ def getAddPage(request):
             container.save()
             crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORCREATE, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
             crreq.save()
+            send(str(crreq.id))
             return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg})
     else:
         print('add page 2')
@@ -176,17 +203,15 @@ def getModifyPage(request):
             message = "modification request sent for "+form.cleaned_data['giturl']
             context = {'message' : message, 'modifyflg' : modifyflg}    
             modifyflg = True;
-            user = User.objects.get(username=username)
-            container = Container.objects.filter(id=c_id)
-            container.delete()
+            user = User.objects.get(username=username)           
             container=Container(container_name=form.cleaned_data['containername'],git_url=form.cleaned_data['giturl'],user_id=user,docker_file=form.cleaned_data['dockerfilereq'],application_name=form.cleaned_data['application'],status=Container.STATUS_FORMODIFY,container_url='',devstack_container_id='',creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
-            container.save()
+            container.save()#update instead of insert
             crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORMODIFY, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
             crreq.save()
+            send(str(crreq.id))
             delmodflg = 'Modify'
             return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
         else:
             message = " error "
             context = {'message' : message, 'modifyflg' : modifyflg}
     return render(request, 'ccloud/thanks.html', context)
-
