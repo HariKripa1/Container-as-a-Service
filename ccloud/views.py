@@ -182,47 +182,53 @@ def getModifyPage(request):
     modifyflg = False;
     c_id = '';
     delmodflg = '';
-    username=request.session.get('username')
+    username=request.session.get('username')    
     if "Redeploy" in request.POST:         
         c_id = request.POST['cid']        
         form = ModifyPage()            
         return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg})
     elif "Delete" in request.POST:
         c_id = request.POST['cid']
-        message = "Deletion request sent for "+c_id        
-        container = Container.objects.filter(id=c_id)
-        container.delete()
+        message = "Deletion request sent for "+c_id
         modifyflg = True;
+        user = User.objects.get(username=username)   
+        container = Container.objects.get(id=c_id)        
+        container.user_id=user        
+        container.status=Container.STATUS_FORDELETE
+        container.container_url=''        
+        container.creation_date=datetime.now()
+        container.last_update_date=datetime.now()        
+        container.save()#update instead of insert
+        crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORDELETE, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+        crreq.save()
+        send(str(crreq.id))
         delmodflg = 'Delete'
         return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
+    elif form.is_valid():
+        # add in db            
+        form.cleaned_data['giturl']   
+        c_id = request.POST.get('cid', None)
+        message = "modification request sent for "+form.cleaned_data['giturl']                     
+        modifyflg = True;
+        user = User.objects.get(username=username)   
+        container = Container.objects.get(id=c_id)
+        container.container_name=form.cleaned_data['containername']
+        container.git_url=form.cleaned_data['giturl']
+        container.user_id=user
+        container.docker_file=form.cleaned_data['dockerfilereq']
+        container.application_name=form.cleaned_data['application']
+        container.status=Container.STATUS_FORMODIFY
+        container.container_url=''
+        container.devstack_container_id=''
+        container.creation_date=datetime.now()
+        container.last_update_date=datetime.now()        
+        container.save()#update instead of insert
+        crreq=RequestQueue(container_id = container,status = container.status, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+        crreq.save()
+        send(str(crreq.id))
+        delmodflg = 'Modify'
+        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
     else:
-        if form.is_valid():
-            # add in db
-            form.cleaned_data['giturl']   
-            c_id = request.POST.get('cid', None)
-            message = "modification request sent for "+form.cleaned_data['giturl']
-            context = {'message' : message, 'modifyflg' : modifyflg}    
-            modifyflg = True;
-            user = User.objects.get(username=username)   
-            container = Container.objects.get(id=c_id)
-            container.container_name=form.cleaned_data['containername']
-            container.git_url=form.cleaned_data['giturl']
-            container.user_id=user
-            container.docker_file=form.cleaned_data['dockerfilereq']
-            container.application_name=form.cleaned_data['application']
-            container.status=Container.STATUS_FORMODIFY
-            container.container_url=''
-            container.devstack_container_id=''
-            container.creation_date=datetime.now()
-            container.last_update_date=datetime.now()
-            container.created_by=username
-            container.save()#update instead of insert
-            crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORMODIFY, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
-            crreq.save()
-            send(str(crreq.id))
-            delmodflg = 'Modify'
-            return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
-        else:
-            message = " error "
-            context = {'message' : message, 'modifyflg' : modifyflg}
+        message = " error "
+        context = {'message' : message, 'modifyflg' : modifyflg}
     return render(request, 'ccloud/thanks.html', context)

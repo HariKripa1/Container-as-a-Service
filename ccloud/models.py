@@ -23,13 +23,15 @@ class Container(models.Model):
     STATUS_CREATED = 'STATUS_CREATED'
     STATUS_DELETED = 'STATUS_DELETED'
     STATUS_MODIFIED = 'STATUS_MODIFIED'
+    STATUS_FAILED = 'STATUS_FAILED'
     STATUS_CHOICES = (
         (STATUS_FORCREATE,'For Create'),
         (STATUS_FORMODIFY,'For Modify'),
         (STATUS_FORDELETE,'For Delete'),
         (STATUS_CREATED,'Created'),
         (STATUS_DELETED,'Delete'),
-        (STATUS_MODIFIED,'Modified')
+        (STATUS_MODIFIED,'Modified'),
+        (STATUS_FAILED,'Failed')
     )
 
     container_name = models.CharField(max_length=200)

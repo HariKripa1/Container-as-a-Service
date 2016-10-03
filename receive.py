@@ -1,6 +1,7 @@
 import pika
 import sys
 import os
+import json
 ##get project directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from django.core.wsgi import get_wsgi_application
@@ -23,18 +24,47 @@ channel = connection.channel()
 channel.queue_declare(queue='reqqueue')
 
 def create_container(cname,user,giturl):
-    print('nodeJsBuild start');    
-    print('file creation')
+    try:
+        error = False
+        errmsg = ''
+        cid=''
+        host_port=''
+        print('nodeJsBuild start');    
+        print('file creation')
+        cli = Client(base_url='unix://var/run/docker.sock')
+        print('cli creation')
+        response = [line for line in cli.build(path=giturl, rm=True, tag=user+'/'+cname)]
+        print(response)
+        print('cli creation end')
+        container = cli.create_container(image=user+'/'+cname)
+        print(container)
+        ccrres = json.loads(json.dumps(container))
+        if 'Id' not in ccrres:
+            error = True
+            errmsg = 'Container creation failed'
+        else:
+            print('1')
+            cid = ccrres['Id']
+            print(cid)
+            response = cli.start(container=container.get('Id'))
+            print(response)    
+            if response != None:            
+                error = True
+                errmsg = 'Container failed to start'
+            else:       
+                error = False
+                info = cli.inspect_container(container)
+                host_port = info['NetworkSettings']['Ports']
+        return error,errmsg,cid,host_port
+    except:
+        return True,'Exception','',''
+
+def remove_container(id):
     cli = Client(base_url='unix://var/run/docker.sock')
-    print('cli creation')
-    response = [line for line in cli.build(path=giturl, rm=True, tag=user+'/'+cname)]
-    response
-    print('cli creation end')
-    container = cli.create_container(image=user+'/'+cname, ports=[(8080, 'tcp')],host_config=cli.create_host_config(port_bindings={'8080/tcp': 49160}))
-    print(container)
-    response = cli.start(container=container.get('Id'))
-    print(response)    
-    return
+    try:
+        cli.remove_container(id,force='true')
+    except:
+        pass
 
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
@@ -42,11 +72,34 @@ def callback(ch, method, properties, body):
     c = rq.container_id
     print(c)
     if c.status == Container.STATUS_FORCREATE:
-        create_container(c.container_name,c.user_id.username,c.git_url)
+        error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
+        if error == False:
+            c.status=Container.STATUS_CREATED
+            c.devstack_container_id=id
+            c.container_url=url
+            c.save()
+        else:
+            c.status=Container.STATUS_FAILED
+            c.save()
     elif c.status == Container.STATUS_FORMODIFY:
-        create_container(c.container_name,c.user_id.username,c.git_url)
+        remove_container(c.devstack_container_id)
+        error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
+        print('2222')
+        print(id)
+        print(url)
+        print(error)
+        if error == False:
+            c.status=Container.STATUS_MODIFIED
+            c.devstack_container_id=id
+            c.container_url=url
+            c.save()
+        else:
+            c.status=Container.STATUS_FAILED
+            c.save()
     elif c.status == Container.STATUS_FORDELETE:
-        create_container(c.container_name,c.user_id.username,c.git_url)
+        print(str(c.devstack_container_id))
+        remove_container(str(c.devstack_container_id))
+        c.delete()
         
 channel.basic_consume(callback,
                       queue='reqqueue',
