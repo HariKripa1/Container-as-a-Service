@@ -23,15 +23,19 @@ class Container(models.Model):
     STATUS_CREATED = 'STATUS_CREATED'
     STATUS_DELETED = 'STATUS_DELETED'
     STATUS_MODIFIED = 'STATUS_MODIFIED'
-    STATUS_FAILED = 'STATUS_FAILED'
+    STATUS_CREATE_FAILED = 'STATUS_CREATE_FAILED'
+    STATUS_MODIFY_FAILED = 'STATUS_MODIFY_FAILED'
+    STATUS_DELETE_FAILED = 'STATUS_DELETE_FAILED'
     STATUS_CHOICES = (
-        (STATUS_FORCREATE,'For Create'),
-        (STATUS_FORMODIFY,'For Modify'),
-        (STATUS_FORDELETE,'For Delete'),
+        (STATUS_FORCREATE,'Creation in progress'),
+        (STATUS_FORMODIFY,'Modification in progress'),
+        (STATUS_FORDELETE,'Deletion in progress'),
         (STATUS_CREATED,'Created'),
         (STATUS_DELETED,'Delete'),
         (STATUS_MODIFIED,'Modified'),
-        (STATUS_FAILED,'Failed')
+        (STATUS_CREATE_FAILED,'Container creation failed'),
+        (STATUS_MODIFY_FAILED,'Container redeployment failed'),
+        (STATUS_DELETE_FAILED,'Container deletion failed')
     )
 
     container_name = models.CharField(max_length=200)

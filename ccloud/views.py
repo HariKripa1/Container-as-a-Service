@@ -197,8 +197,7 @@ def getModifyPage(request):
         user = User.objects.get(username=username)   
         container = Container.objects.get(id=c_id)        
         container.user_id=user        
-        container.status=Container.STATUS_FORDELETE
-        container.container_url=''        
+        container.status=Container.STATUS_FORDELETE           
         container.creation_date=datetime.now()
         container.last_update_date=datetime.now()        
         container.save()#update instead of insert
@@ -220,9 +219,7 @@ def getModifyPage(request):
         container.user_id=user
         container.docker_file=form.cleaned_data['dockerfilereq']
         container.application_name=form.cleaned_data['application']
-        container.status=Container.STATUS_FORMODIFY
-        container.container_url=''
-        container.devstack_container_id=''
+        container.status=Container.STATUS_FORMODIFY        
         container.creation_date=datetime.now()
         container.last_update_date=datetime.now()        
         container.save()#update instead of insert

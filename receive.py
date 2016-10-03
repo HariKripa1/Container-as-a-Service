@@ -69,14 +69,15 @@ def remove_container(id):
     cli = Client(base_url='unix://var/run/docker.sock')
     try:
         cli.remove_container(id,force='true')
+        return True
     except:
-        pass
-
+        return False
+    
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
     rq = RequestQueue.objects.get(id=body)
     c = rq.container_id
-    print(c)
+    print(c.devstack_container_id)
     if c.status == Container.STATUS_FORCREATE:
         error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
         if error == False:
@@ -85,27 +86,35 @@ def callback(ch, method, properties, body):
             c.container_url=url
             c.save()
         else:
-            c.status=Container.STATUS_FAILED
+            c.status=Container.STATUS_CREATE_FAILED
             c.save()
     elif c.status == Container.STATUS_FORMODIFY:
-        remove_container(c.devstack_container_id)
-        error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
-        print('2222')
-        print(id)
-        print(url)
-        print(error)
+        error = remove_container(c.devstack_container_id)
+        print error
         if error == False:
-            c.status=Container.STATUS_MODIFIED
-            c.devstack_container_id=id
-            c.container_url=url
-            c.save()
+            print 'errr'
+            c.status=Container.STATUS_MODIFY_FAILED
         else:
-            c.status=Container.STATUS_FAILED
-            c.save()
+            print 'else'            
+            error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
+            if error == False:
+                print 'mod'
+                c.status=Container.STATUS_MODIFIED
+                c.devstack_container_id=id
+                c.container_url=url
+                c.save()
+            else:          
+                print 'else11'
+                c.status=Container.STATUS_MODIFY_FAILED
+                c.save()
     elif c.status == Container.STATUS_FORDELETE:
         print(str(c.devstack_container_id))
-        remove_container(str(c.devstack_container_id))
-        c.delete()
+        error = remove_container(str(c.devstack_container_id))
+        if error == False:
+            c.status=Container.STATUS_DELETE_FAILED
+        else:
+            c.status=Container.STATUS_DELETED
+        c.save()
         
 channel.basic_consume(callback,
                       queue='reqqueue',
