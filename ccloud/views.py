@@ -144,6 +144,7 @@ def thanks(request):
     context = {'message' : message}
     return render(request, 'ccloud/thanks.html', context)
 
+@login_required
 def getMainform(request):        
     username=request.session.get('username')
     user = User.objects.get(username=username)
@@ -152,6 +153,7 @@ def getMainform(request):
     #return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
     return render(request, 'ccloud/mainPage.html', {'container': container } )
 
+@login_required
 def getAddPage(request):
     form = AddPage(request.POST)
     print('fasdsas');
@@ -177,6 +179,7 @@ def getAddPage(request):
         form = AddPage()                
     return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg})
 
+@login_required
 def getModifyPage(request):    
     form = ModifyPage(request.POST)
     modifyflg = False;

@@ -16,6 +16,7 @@ from ccloud.models import Container
 from ccloud.models import RequestQueue
 from io import BytesIO
 from docker import Client
+import docker.tls as tls
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(
         host='localhost'))
@@ -32,11 +33,15 @@ def create_container(cname,user,giturl):
         print('nodeJsBuild start');    
         print('file creation')
         cli = Client(base_url='unix://var/run/docker.sock')
+        #tls_config = tls.TLSConfig(  
+        #    client_cert=('/Users/kasi-mac/.docker/machine/machines/default/cert.pem', '/Users/kasi-mac/.docker/machine/machines/default/key.pem'),
+        #    ca_cert='/Users/kasi-mac/.docker/machine/machines/default/ca.pem', verify=True)
+        #cli = Client(base_url='tcp://192.168.99.100:2376', tls=tls_config)
         print('cli creation')
         response = [line for line in cli.build(path=giturl, rm=True, tag=user+'/'+cname)]
         print(response)
         print('cli creation end')
-        container = cli.create_container(image=user+'/'+cname)
+        container = cli.create_container(image=user+'/'+cname,name=cname,host_config=cli.create_host_config(publish_all_ports= True))
         print(container)
         ccrres = json.loads(json.dumps(container))
         if 'Id' not in ccrres:
@@ -54,6 +59,7 @@ def create_container(cname,user,giturl):
             else:       
                 error = False
                 info = cli.inspect_container(container)
+                print info
                 host_port = info['NetworkSettings']['Ports']
         return error,errmsg,cid,host_port
     except:
