@@ -60,9 +60,11 @@ def create_container(cname,user,giturl):
                 error = False
                 info = cli.inspect_container(container)
                 print info
-                host_port = info['NetworkSettings']['Ports']
+                host_port = 'http://'+str(info['NetworkSettings']['Ports']['8080/tcp'][0]['HostIp'])+':'+str(info['NetworkSettings']['Ports']['8080/tcp'][0]['HostPort'])
+		print host_port
         return error,errmsg,cid,host_port
-    except:
+    except Exception as inst:
+	print inst.args
         return True,'Exception','',''
 
 def remove_container(id):
