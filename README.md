@@ -1,4 +1,11 @@
-tall GitLab:
+
+
+Container as a Service - Portal to deploy and manage container
+* User friendly interface for developers.
+* Developers can concentrate on their application development and need not worry about deployment.
+* APIs to create and manage containers, application deployment which can be used by THOTHLAB.
+
+Install GitLab:
 
 1. $ sudo apt-get install curl openssh-server ca-certificates postfix
 2. $ curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash sudo apt-get install gitlab-ce
