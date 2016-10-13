@@ -17,6 +17,9 @@ from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
 from datetime import datetime
+from keystoneauth1.identity import v2
+from keystoneauth1 import session
+from keystoneclient.v2_0 import client
 import pika
 import sys
 import os
@@ -91,9 +94,31 @@ def register(request):
             # Once hashed, we can update the user object.
             user.set_password(user.password)
             user.save()
-
             registered = True
-
+            
+            auth_url='http://10.0.2.15:5000/v2.0'
+            auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
+            sess = session.Session(auth=auth)
+            keystone = client.Client(session=sess)
+            keystone.tenants.list() 
+            username=user.username
+            password=user.password
+            tenant_name=username+"project"
+            keystone.tenants.create(tenant_name=tenant_name,description="Default Tenant", enabled=True)
+            tenants = keystone.tenants.list()
+            my_tenant = [x for x in tenants if x.name==tenant_name][0]
+            my_user = keystone.users.create(name=username,password=password,tenant_id=my_tenant.id)
+            roles = keystone.roles.list()
+            try:
+                my_role = [x for x in roles if x.name=='user'][0]
+            except:    
+                my_role = keystone.roles.create('user')
+            if my_role is None:
+                my_role = keystone.roles.create('user')
+            keystone.roles.add_user_role(my_user, my_role, my_tenant)
+            service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
+            keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://10.0.2.15:8774/v2/%(tenant_id)s", adminurl="http://10.0.2.15:8774/v2/%(tenant_id)s", internalurl="http://10.0.2.15:8774/v2/%(tenant_id)s")
+            
         # Invalid form or forms - mistakes or something else?
         # Print problems to the terminal.
         # They'll also be shown to the user.
