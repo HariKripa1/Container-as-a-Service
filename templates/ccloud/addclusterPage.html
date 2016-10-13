@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <p> Add cluster </p>
+  {% if addflg %}
+   <strong>Request sent for adding cluster!! </strong>
+   <a href="/ccloud/clusterHome">Return to the homepage.</a><br />
+  {% else %}
+  <form id="addclusterPage" action="/ccloud/addclusterPage/" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}    
+    <input type="submit" name="Add" value="Add Cluster" /> 
+  </form>
+  {% endif %}
+  </body>
+</html>

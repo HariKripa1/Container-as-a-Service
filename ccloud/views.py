@@ -11,6 +11,7 @@ from django.shortcuts import render
 from .forms import NameForm
 from .forms import AddPage
 from .forms import ModifyPage
+from .forms import AddClusterPage
 from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
@@ -118,7 +119,7 @@ def user_login(request):
     		if user.is_active:
     			login(request,user)    			
     			request.session['username'] = username
-    			return HttpResponseRedirect('/ccloud/mainPage/')
+    			return HttpResponseRedirect('/ccloud/userHome/')
     		else:
     			return HttpResponse("Your CCloud Account is disabled")
     	else:
@@ -231,4 +232,50 @@ def getModifyPage(request):
     else:
         message = " error "
         context = {'message' : message, 'modifyflg' : modifyflg}
+    return render(request, 'ccloud/thanks.html', context)
+
+@login_required
+def getUserHome(request):
+    message = "Successfully submitted"
+    context = {'message' : message}
+    return render(request, 'ccloud/userHome.html', context)
+
+@login_required
+def getClusterHome(request):        
+    username=request.session.get('username')
+    user = User.objects.get(username=username)
+    container = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)
+    print(request.session.get('username'))
+    #return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
+    return render(request, 'ccloud/clusterHome.html', {'cluster': container } )
+
+@login_required
+def getaddclusterPage(request):
+    #message = "Successfully submitted"
+    #context = {'message' : message}
+    #return render(request, 'ccloud/thanks.html', context)
+
+    form = AddClusterPage(request.POST)
+    print('fasdsas');
+    addflg = False;    
+    username=request.session.get('username')
+    if form.is_valid():
+            # add in db
+            print('addd cluster')
+            form.cleaned_data['clustername']            
+            message = "add request sent for "+form.cleaned_data['clustername']
+            context = {'message' : message}
+            addflg = True; 
+            user = User.objects.get(username=username)           
+            return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg})
+    else:
+        print('add page 2')
+        form = AddClusterPage()                
+    return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg})
+
+
+@login_required
+def getmodifyclusterPage(request):
+    message = "Successfully submitted"
+    context = {'message' : message}
     return render(request, 'ccloud/thanks.html', context)
