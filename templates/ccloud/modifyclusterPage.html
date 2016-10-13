@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <strong><h2> <p> Cluster details {{cid}} </p></h2></strong>   
+  {% if addflg %}
+   <strong> {{message}}</strong>
+   <a href="/ccloud/clusterHome">Return to the homepage.</a><br />
+  {% else %}
+  <strong> <p> Nodes in cluster {{cid}}</p> </strong>
+  <table border=1>
+    <tr><td>Node</td><td>Node name</td></tr>
+    {% for c in node %}
+        <tr>
+            <td>{{c.id}}</td>
+            <td>{{c.name}}</td>                
+        </tr>        
+    {% endfor %}        
+    </table>
+  <strong> <p> Services in each node in {{cid}}</p> </strong> 
+  <table border=1>
+    <tr><td>Service</td><td>Service ID</td></tr>
+    {% for c in node %}
+        <tr>
+            <td>{{c.id}}</td>
+            <td>{{c.name}}</td>                
+        </tr>        
+    {% endfor %}        
+    </table>
+  {% if modorview %}
+  <strong>  <p> No of nodes to be added </p> </strong> 
+  <form id="modifyclusterPage" action="/ccloud/modifyclusterPage/" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}   
+    <input type="hidden" name="cid" value={{cid}} />
+    <input type="submit" name="Modify" value="Modify Cluster" /> 
+  </form>  
+  {% endif %}
+  {% endif %}
+  </body>
+</html>

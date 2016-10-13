@@ -12,6 +12,7 @@ from .forms import NameForm
 from .forms import AddPage
 from .forms import ModifyPage
 from .forms import AddClusterPage
+from .forms import ModifyClusterPage
 from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
@@ -244,17 +245,13 @@ def getUserHome(request):
 def getClusterHome(request):        
     username=request.session.get('username')
     user = User.objects.get(username=username)
-    container = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)
+    cluster = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)#change to cluster once model is created
     print(request.session.get('username'))
     #return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
-    return render(request, 'ccloud/clusterHome.html', {'cluster': container } )
+    return render(request, 'ccloud/clusterHome.html', {'cluster': cluster } )
 
 @login_required
 def getaddclusterPage(request):
-    #message = "Successfully submitted"
-    #context = {'message' : message}
-    #return render(request, 'ccloud/thanks.html', context)
-
     form = AddClusterPage(request.POST)
     print('fasdsas');
     addflg = False;    
@@ -276,6 +273,42 @@ def getaddclusterPage(request):
 
 @login_required
 def getmodifyclusterPage(request):
-    message = "Successfully submitted"
-    context = {'message' : message}
-    return render(request, 'ccloud/thanks.html', context)
+    form =  ModifyClusterPage(request.POST)
+    print('fasdsas');
+    addflg = False;    
+    username=request.session.get('username')
+    cid = '';
+    c='';
+    modorview=False;
+    message=''
+    if "Redeploy" in request.POST or "View" in request.POST :
+        print('ttpe1')
+        if "Redeploy" in request.POST :
+            modorview=True
+        else:
+            modorview=False        
+        print('add page 2')        
+        cid = request.POST['cid']
+        print(cid)
+        form = ModifyClusterPage()
+        return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+    elif "Delete" in request.POST:       
+        cid = request.POST.get('cid', None)
+        print(cid)        
+        addflg = True; 
+        message = "Delete request sent for "+cid
+        return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+    elif form.is_valid():
+            # add in db
+            print('addd cluster')            
+            cid = request.POST.get('cid', None)
+            print(cid)
+            message = "Modify request sent for "+cid
+            print(message)
+            print(cid)
+            context = {'message' : cid}
+            addflg = True; 
+            user = User.objects.get(username=username)    
+            node = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)#change to node once model is created for the user and cluster id
+            return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+    return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})

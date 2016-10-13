@@ -26,3 +26,6 @@ class ModifyPage(forms.Form):
 class AddClusterPage(forms.Form):
     clustername = forms.CharField(label='Cluster Name', max_length=500)
     noOfNodes = forms.IntegerField(label='No of Nodes', max_value=3, min_value=1)
+
+class ModifyClusterPage(forms.Form):
+    noOfNodes = forms.IntegerField(label='No of Nodes', max_value=3, min_value=1)    
