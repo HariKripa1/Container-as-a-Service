@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>Clutser List</title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <a href="/ccloud/logout">Logout</a>
+  <p> Cluster List </p>    
+    <form id="addclusterPage" action="/ccloud/addclusterPage/" method="get">
+    {% csrf_token %}
+    <div>
+    <a href="/ccloud/addclusterPage/">Add cluster</a><br />
+    </div>
+    </form>
+    <form id="delete" action="/ccloud/modifyclusterPage/" method="post">
+    {% csrf_token %}
+    <div>    
+    {% if cluster.count == 0 %}
+        <p> No clusters available </p>
+    {% else %}
+    <table border=1>
+        <tr><td>Select</td><td>Cluster ID</td><td>Cluster Name</td></tr>
+        {% for c in cluster %}
+            <tr> 
+                <td> <input type="radio" name="cid" value="{{ c.id }}"></td>
+                <td>{{c.id}}</td>
+                <td>{{c.name}}</td>                
+            </tr>        
+        {% endfor %}        
+        </table>
+        <br/>
+        <input type="submit" name="View" id="View" value="View" />
+        <input type="submit" name="Redeploy" id="Redeploy" value="Redeploy" />
+        <input type="submit" name="Delete" id="Delete" value="Delete" />
+     {% endif %}   
+    </div>
+    </form>
+  </body>
+</html>
+

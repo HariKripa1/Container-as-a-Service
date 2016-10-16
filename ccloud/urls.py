@@ -12,5 +12,9 @@ urlpatterns = [
     url(r'^thanks/$', views.thanks, name='thanks'),
     url(r'^mainPage/$', views.getMainform, name='getMainform'),
     url(r'^addPage/$', views.getAddPage, name='getAddPage'),
-    url(r'^modifyPage/$', views.getModifyPage, name='getModifyPage'),
+    url(r'^modifyPage/$', views.getModifyPage, name='getModifyPage'),    
+    url(r'^userHome/$', views.getUserHome, name='userHome'),
+    url(r'^clusterHome/$', views.getClusterHome, name='clusterHome'),
+    url(r'^addclusterPage/$', views.getaddclusterPage, name='addclusterPage'),
+    url(r'^modifyclusterPage/$', views.getmodifyclusterPage, name='modifyclusterPage'),
 ]

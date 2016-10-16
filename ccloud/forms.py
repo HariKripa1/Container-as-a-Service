@@ -22,3 +22,10 @@ class ModifyPage(forms.Form):
     giturl = forms.CharField(label='GIT Hub URL', max_length=500)
     dockerfilereq = forms.BooleanField(label='Docker file required', initial=False, required=False)
     application = forms.ChoiceField(choices=Container.APPLICATION_CHOICES)
+
+class AddClusterPage(forms.Form):
+    clustername = forms.CharField(label='Cluster Name', max_length=500)
+    noOfNodes = forms.IntegerField(label='No of Nodes', max_value=3, min_value=1)
+
+class ModifyClusterPage(forms.Form):
+    noOfNodes = forms.IntegerField(label='No of Nodes', max_value=3, min_value=1)    

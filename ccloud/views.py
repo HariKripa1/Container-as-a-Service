@@ -11,10 +11,15 @@ from django.shortcuts import render
 from .forms import NameForm
 from .forms import AddPage
 from .forms import ModifyPage
+from .forms import AddClusterPage
+from .forms import ModifyClusterPage
 from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
 from datetime import datetime
+from keystoneauth1.identity import v2
+from keystoneauth1 import session
+from keystoneclient.v2_0 import client
 import pika
 import sys
 import os
@@ -89,9 +94,31 @@ def register(request):
             # Once hashed, we can update the user object.
             user.set_password(user.password)
             user.save()
-
             registered = True
-
+            
+            auth_url='http://10.0.2.15:5000/v2.0'
+            auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
+            sess = session.Session(auth=auth)
+            keystone = client.Client(session=sess)
+            keystone.tenants.list() 
+            username=user.username
+            password=user.password
+            tenant_name=username+"project"
+            keystone.tenants.create(tenant_name=tenant_name,description="Default Tenant", enabled=True)
+            tenants = keystone.tenants.list()
+            my_tenant = [x for x in tenants if x.name==tenant_name][0]
+            my_user = keystone.users.create(name=username,password=password,tenant_id=my_tenant.id)
+            roles = keystone.roles.list()
+            try:
+                my_role = [x for x in roles if x.name=='user'][0]
+            except:    
+                my_role = keystone.roles.create('user')
+            if my_role is None:
+                my_role = keystone.roles.create('user')
+            keystone.roles.add_user_role(my_user, my_role, my_tenant)
+            service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
+            keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://10.0.2.15:8774/v2/%(tenant_id)s", adminurl="http://10.0.2.15:8774/v2/%(tenant_id)s", internalurl="http://10.0.2.15:8774/v2/%(tenant_id)s")
+            
         # Invalid form or forms - mistakes or something else?
         # Print problems to the terminal.
         # They'll also be shown to the user.
@@ -118,7 +145,7 @@ def user_login(request):
     		if user.is_active:
     			login(request,user)    			
     			request.session['username'] = username
-    			return HttpResponseRedirect('/ccloud/mainPage/')
+    			return HttpResponseRedirect('/ccloud/userHome/')
     		else:
     			return HttpResponse("Your CCloud Account is disabled")
     	else:
@@ -232,3 +259,81 @@ def getModifyPage(request):
         message = " error "
         context = {'message' : message, 'modifyflg' : modifyflg}
     return render(request, 'ccloud/thanks.html', context)
+
+@login_required
+def getUserHome(request):
+    message = "Successfully submitted"
+    context = {'message' : message}
+    return render(request, 'ccloud/userHome.html', context)
+
+@login_required
+def getClusterHome(request):        
+    username=request.session.get('username')
+    user = User.objects.get(username=username)
+    cluster = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)#change to cluster once model is created
+    print(request.session.get('username'))
+    #return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
+    return render(request, 'ccloud/clusterHome.html', {'cluster': cluster } )
+
+@login_required
+def getaddclusterPage(request):
+    form = AddClusterPage(request.POST)
+    print('fasdsas');
+    addflg = False;    
+    username=request.session.get('username')
+    if form.is_valid():
+            # add in db
+            print('addd cluster')
+            form.cleaned_data['clustername']            
+            message = "add request sent for "+form.cleaned_data['clustername']
+            context = {'message' : message}
+            addflg = True; 
+            user = User.objects.get(username=username)           
+            return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg})
+    else:
+        print('add page 2')
+        form = AddClusterPage()                
+    return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg})
+
+
+@login_required
+def getmodifyclusterPage(request):
+    form =  ModifyClusterPage(request.POST)
+    print('fasdsas');
+    addflg = False;    
+    username=request.session.get('username')
+    cid = '';
+    c='';
+    modorview=False;
+    message=''
+    if "Redeploy" in request.POST or "View" in request.POST :
+        print('ttpe1')
+        if "Redeploy" in request.POST :
+            modorview=True
+        else:
+            modorview=False        
+        print('add page 2')        
+        cid = request.POST['cid']
+        print(cid)
+        form = ModifyClusterPage()
+        return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+    elif "Delete" in request.POST:       
+        cid = request.POST.get('cid', None)
+        print(cid)        
+        addflg = True; 
+        message = "Delete request sent for "+cid
+        return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+    elif form.is_valid():
+            # add in db
+            print('addd cluster')            
+            cid = request.POST.get('cid', None)
+            print(cid)
+            message = "Modify request sent for "+cid
+            print(message)
+            print(cid)
+            context = {'message' : cid}
+            addflg = True; 
+            user = User.objects.get(username=username)    
+            node = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)#change to node once model is created for the user and cluster id
+            return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+    return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
