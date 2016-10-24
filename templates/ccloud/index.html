@@ -1,7 +1,11 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'ccloud/style.css' %}" />
+Hello
 {% if user.is_authenticated %}
-<a href="/ccloud/name">Name</a>
+<li><a href="/ccloud/name">Name</a></li>
 <a href="/ccloud/logout">Logout</a>
 {% else %}
-<a href="/ccloud/register">Register Here</a>
+<li><a href="/ccloud/register">Register Here</a></li>
 <a href="/ccloud/login">Login</a>
 {%endif%}
