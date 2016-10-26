@@ -44,8 +44,8 @@ class Node(models.Model):
     MASTER_Y = 'Y'
     MASTER_N = 'N'
     MASTER_CHOICES = (
-        (MASTER_Y,'Yes'),
-        (MASTER_N,'No')
+        (MASTER_Y,'Master'),
+        (MASTER_N,'Worker')
     )
     STATUS_FORCREATE = 'STATUS_FORCREATE'
     STATUS_FORMODIFY = 'STATUS_FORMODIFY'
@@ -69,11 +69,13 @@ class Node(models.Model):
     )
     cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     machine_ip = models.CharField(max_length=200)
-    master = models.CharField(max_length=1,choices=MASTER_CHOICES)
-    machine_name = models.CharField(max_length=200)
+    master=models.CharField(max_length=1,choices=MASTER_CHOICES)
+    machine_name=models.CharField(max_length=200)
     status=models.CharField(max_length=100,choices=STATUS_CHOICES)
+    def __str__(self):
+        return self.cluster_id
     
-class openstack_user(models.Model):
+class Openstack_User(models.Model):
     ADMIN = 'A'
     USER = 'U'
     LOOKUP_CHOICES = (
@@ -83,6 +85,8 @@ class openstack_user(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)    
     projectname = models.CharField(max_length=200)
     role = models.CharField(max_length=1,choices=LOOKUP_CHOICES)
+    def __str__(self):
+        return str(self.user_id)
     
 class Container(models.Model):
     APPLICATION_NODE_JS = 'APPLICATION_NODE_JS'

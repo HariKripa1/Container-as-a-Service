@@ -12,11 +12,13 @@
   {% else %}
   <strong> <p> Nodes in cluster {{cid}}</p> </strong>
   <table border=1>
-    <tr><td>Node</td><td>Node name</td></tr>
+    <tr><td>Node</td><td>Node name</td><td>status</td><td>Master/Worker</td></tr>
     {% for c in node %}
         <tr>
-            <td>{{c.id}}</td>
-            <td>{{c.name}}</td>                
+            <td>{{c.machine_ip}}</td>
+            <td>{{c.machine_name}}</td>                
+            <td>{{c.status}}</td>                
+            <td>{{c.master}}</td>                
         </tr>        
     {% endfor %}        
     </table>

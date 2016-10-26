@@ -20,12 +20,14 @@
         <p> No clusters available </p>
     {% else %}
     <table border=1>
-        <tr><td>Select</td><td>Cluster ID</td><td>Cluster Name</td></tr>
+        <tr><td>Select</td><td>Cluster ID</td><td>Cluster Name</td><td>Cluster Status</td><td>Number of instances</td></tr>
         {% for c in cluster %}
             <tr> 
                 <td> <input type="radio" name="cid" value="{{ c.id }}"></td>
                 <td>{{c.id}}</td>
-                <td>{{c.name}}</td>                
+                <td>{{c.cluster_name}}</td>                
+                <td>{{c.status}}</td>                
+                <td>{{c.no_of_instances}}</td>
             </tr>        
         {% endfor %}        
         </table>

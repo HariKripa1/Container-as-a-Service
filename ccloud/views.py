@@ -13,6 +13,9 @@ from .forms import AddPage
 from .forms import ModifyPage
 from .forms import AddClusterPage
 from .forms import ModifyClusterPage
+from .models import Cluster
+from .models import Node
+from .models import Openstack_User
 from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
@@ -118,7 +121,8 @@ def register(request):
             keystone.roles.add_user_role(my_user, my_role, my_tenant)
             service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
             keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://10.0.2.15:8774/v2/%(tenant_id)s", adminurl="http://10.0.2.15:8774/v2/%(tenant_id)s", internalurl="http://10.0.2.15:8774/v2/%(tenant_id)s")
-            
+            openstackuser=Openstack_User(user_id=user,projectname=tenant_name,role="user")
+            openstackuser.save()
         # Invalid form or forms - mistakes or something else?
         # Print problems to the terminal.
         # They'll also be shown to the user.
@@ -141,10 +145,19 @@ def user_login(request):
     	username=request.POST['username']
     	password=request.POST['password']
     	user=authenticate(username=username,password=password)
+    	try:
+            auth_url='http://10.0.2.15:5000/v2.0'
+            auth = v2.Password(username=username, password=password,tenant_name=username+"project", auth_url=auth_url)
+            sess = session.Session(auth=auth)
+            keystone = client.Client(session=sess)
+    	except:
+            print "Invalid login details: {0}, {1}".format(username, password)
+            return HttpResponse("Invalid login details supplied.")
     	if user:
     		if user.is_active:
     			login(request,user)    			
     			request.session['username'] = username
+    			request.session['tenant_name'] = username+"project"
     			return HttpResponseRedirect('/ccloud/userHome/')
     		else:
     			return HttpResponse("Your CCloud Account is disabled")
@@ -270,7 +283,7 @@ def getUserHome(request):
 def getClusterHome(request):        
     username=request.session.get('username')
     user = User.objects.get(username=username)
-    cluster = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)#change to cluster once model is created
+    cluster = Cluster.objects.filter(user_id=user).exclude(status = Cluster.STATUS_DELETED)#change to cluster once model is created
     print(request.session.get('username'))
     #return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
     return render(request, 'ccloud/clusterHome.html', {'cluster': cluster } )
@@ -287,8 +300,10 @@ def getaddclusterPage(request):
             form.cleaned_data['clustername']            
             message = "add request sent for "+form.cleaned_data['clustername']
             context = {'message' : message}
-            addflg = True; 
+            addflg = True;             
             user = User.objects.get(username=username)           
+            cluster=Cluster(cluster_name=form.cleaned_data['clustername'],user_id=user,status=Cluster.STATUS_FORCREATE,no_of_instances=0,requested_no_of_instance=form.cleaned_data['noOfNodes'],creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+            cluster.save()
             return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg})
     else:
         print('add page 2')
@@ -334,6 +349,13 @@ def getmodifyclusterPage(request):
             context = {'message' : cid}
             addflg = True; 
             user = User.objects.get(username=username)    
-            node = Container.objects.filter(user_id=user).exclude(status = Container.STATUS_DELETED)#change to node once model is created for the user and cluster id
-            return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+            cluster= Cluster.objects.get(id=cid)            
+            cluster.user_id=user       
+            cluster.status=Container.STATUS_FORMODIFY        
+            cluster.requested_no_of_instance = form.cleaned_data['noOfNodes']        
+            cluster.creation_date=datetime.now()
+            cluster.last_update_date=datetime.now()        
+            cluster.save()           
+            node = Node.objects.filter(user_id=cluster).exclude(status = Cluster.STATUS_DELETED)#change to cluster once model is created
+            return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message,'node': node})
     return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
