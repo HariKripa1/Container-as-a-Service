@@ -14,16 +14,16 @@ source openrc $user_name $project_name
 env|grep OS
 
 test -f ~/.ssh/$user_name.pub || ssh-keygen -t rsa -N "" -f ~/.ssh/$user_name
-#nova keypair-add --pub-key ~/.ssh/$user_name.pub $user_name"key"
-#nova secgroup-add-rule $SECURITY_GROUP_NAME icmp -1 -1 0.0.0.0/0
-#nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 22 22 0.0.0.0/0
-#neutron net-create $network_name
+nova keypair-add --pub-key ~/.ssh/$user_name.pub $user_name"key"
+nova secgroup-add-rule $SECURITY_GROUP_NAME icmp -1 -1 0.0.0.0/0
+nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 22 22 0.0.0.0/0
+neutron net-create $network_name
 network_id=$(neutron net-list | grep $network_name | awk '{print $2}')
-#neutron subnet-create $network_name 10.0.1.0/24 --name $sub_name
+neutron subnet-create $network_name 10.0.1.0/24 --name $sub_name
 public_net_name="public"
-#neutron router-create $router_name
-#neutron router-gateway-set $router_name $public_net_name
-#neutron router-interface-add $router_name $sub_name
+neutron router-create $router_name
+neutron router-gateway-set $router_name $public_net_name
+neutron router-interface-add $router_name $sub_name
 image_id=$(openstack image list | grep ubuntu | awk '{print $2}')
 cat > inst-config.txt << END
 #cloud-config
