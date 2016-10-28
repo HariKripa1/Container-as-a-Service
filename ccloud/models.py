@@ -18,6 +18,8 @@ class Cluster(models.Model):
     STATUS_DELETE_FAILED = 'STATUS_DELETE_FAILED'
     STATUS_NODE_COMPLETE = 'STATUS_NODE_COMPLETE'    
     STATUS_NODE_FAILED = 'STATUS_NODE_FAILED'
+    STATUS_DM_CREATED = 'STATUS_DM_CREATED'
+    STATUS_DM_FAILED = 'STATUS_DM_FAILED'
     STATUS_CHOICES = (
         (STATUS_FORCREATE,'Creation in progress'),
         (STATUS_NODE_COMPLETE,'Creation in progress'),
@@ -29,7 +31,9 @@ class Cluster(models.Model):
         (STATUS_MODIFIED,'Modified'),
         (STATUS_CREATE_FAILED,'Clutser creation failed'),
         (STATUS_MODIFY_FAILED,'Cluster redeployment failed'),
-        (STATUS_DELETE_FAILED,'Cluster deletion failed')
+        (STATUS_DELETE_FAILED,'Cluster deletion failed'),
+        (STATUS_DM_CREATED,'Docker machine created'),
+        (STATUS_DM_FAILED,'Docker machine failed')
     )
     cluster_name = models.CharField(max_length=200,unique=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -60,6 +64,8 @@ class Node(models.Model):
     STATUS_CREATE_FAILED = 'STATUS_CREATE_FAILED'
     STATUS_MODIFY_FAILED = 'STATUS_MODIFY_FAILED'
     STATUS_DELETE_FAILED = 'STATUS_DELETE_FAILED'
+    STATUS_DM_CREATED = 'STATUS_DM_CREATED'
+    STATUS_DM_FAILED = 'STATUS_DM_FAILED'
     STATUS_CHOICES = (
         (STATUS_FORCREATE,'Creation in progress'),
         (STATUS_FORMODIFY,'Modification in progress'),
@@ -69,7 +75,9 @@ class Node(models.Model):
         (STATUS_MODIFIED,'Modified'),
         (STATUS_CREATE_FAILED,'Node creation failed'),
         (STATUS_MODIFY_FAILED,'Node redeployment failed'),
-        (STATUS_DELETE_FAILED,'Node deletion failed')
+        (STATUS_DELETE_FAILED,'Node deletion failed'),
+        (STATUS_DM_CREATED,'Docker machine created'),
+        (STATUS_DM_FAILED,'Docker machine failed')
     )
     cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     machine_ip = models.CharField(max_length=200)

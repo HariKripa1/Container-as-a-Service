@@ -26,7 +26,7 @@ neutron router-gateway-set $router_name $public_net_name
 neutron router-interface-add $router_name $sub_name
 image_id=$(openstack image list | grep ubuntu | awk '{print $2}')
 cat > inst-config.txt << END
-#cloud-config
+cloud-config
 hostname: ubun
 manage_etc_hosts: true
 END
@@ -41,7 +41,6 @@ do
     nova floating-ip-associate $user_name"-instance-"$x $floating_ip
     #ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
     #docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$user_name"-instance-"$x
-    #docker-machine regenerate-certs "dm-"$user_name"-instance-"$x
-
+    #docker-machine regenerate-certs "dm-"$user_name"-instance-"$x    
   x=$(( $x + 1 ))
 done

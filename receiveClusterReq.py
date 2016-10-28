@@ -16,6 +16,7 @@ from ccloud.models import Cluster
 from ccloud.models import RequestQueue
 from ccloud.models import Openstack_User
 from ccloud.models import User
+from ccloud.models import Node
 from io import BytesIO
 from docker import Client
 import docker.tls as tls
@@ -39,12 +40,10 @@ def senddockerCreate(rid):
                         body=rid)
     print(" [x] Sent request for cluster " + rid)
     connection.close()
-    return HttpResponseRedirect('/ccloud/thanks/')
 
 def create_cluster(c):
     error = False
-    errmsg= ''
-    cid = ''
+    errmsg= ''    
     try:
         print c.user_id
         openstackuser = Openstack_User.objects.get(user_id=c.user_id)
@@ -55,16 +54,30 @@ def create_cluster(c):
         print c.requested_no_of_instance
         output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
         print output
-        #call build node        
-        return error,errmsg,cid
+        nodes=output.split('\n')
+        j = 0
+        for i in nodes:
+            n=re.match('Machine name : (.*),(.*)',i)
+            if n:
+                name=n.group(1)
+                ip=n.group(2)
+                if j==0:
+                    master='Y'
+                    c.master_ip=ip
+                    c.save()
+                else:
+                    master='N'
+                j=j+1    
+                node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED)
+                node.save()        
+        return error,errmsg
     except Exception as inst:
 	print inst.args
-        return True,'Exception',''
+        return True,'Exception'
 
 def modify_cluster(c):
     error = False
-    errmsg= ''
-    cid = ''
+    errmsg= ''    
     try:
         print c.user_id
         openstackuser = Openstack_User.objects.get(user_id=c.user_id)
@@ -76,15 +89,14 @@ def modify_cluster(c):
         #call modify script
         #output = subprocess.check_output([user.username,user.password,openstackuser.projectname,c.requested_no_of_instance])
         #print output         
-        return error,errmsg,cid
+        return error,errmsg
     except Exception as inst:
 	print inst.args
-        return True,'Exception','',''
+        return True,'Exception'
     
 def remove_cluster(c):
     error = False
     errmsg= ''
-    cid = ''
     try:
         print c.user_id
         openstackuser = Openstack_User.objects.get(user_id=c.user_id)
@@ -96,10 +108,10 @@ def remove_cluster(c):
         #call delete script
         #output = subprocess.check_output([user.username,user.password,openstackuser.projectname,c.requested_no_of_instance])
         #print output               
-        return error,errmsg,cid
+        return error,errmsg
     except Exception as inst:
        print inst.args
-       return True,'Exception','',''    
+       return True,'Exception' 
         
     
 def callback(ch, method, properties, body):
@@ -107,26 +119,24 @@ def callback(ch, method, properties, body):
     c = Cluster.objects.get(id=body)    
     print(c.id)
     if c.status == Cluster.STATUS_FORCREATE:
-        error,errmsg,id = create_cluster(c)
+        error,errmsg = create_cluster(c)
         if error == False:
             c.status=Cluster.STATUS_NODE_COMPLETE            
-            c.save()
-            #insert into Node model
-            senddockerCreate(c)            
+            c.save()            
+            senddockerCreate(str(c.id))            
         else:
             c.status=Cluster.STATUS_NODE_FAILED
             c.save()
     elif c.status == Cluster.STATUS_FORMODIFY:
-        error,errmsg,id = modify_cluster(c)
+        error,errmsg = modify_cluster(c)
         if error == False:
             c.status=Cluster.STATUS_NODE_COMPLETE            
-            c.save()
-            #update Node model
+            c.save()            
         else:
             c.status=Cluster.STATUS_NODE_FAILED
             c.save()
     elif c.status == Cluster.STATUS_FORDELETE:
-        error,errmsg,id = delete_cluster(c)
+        error,errmsg = delete_cluster(c)
         if error == False:
             c.status=Cluster.STATUS_DELETED            
             c.save()
