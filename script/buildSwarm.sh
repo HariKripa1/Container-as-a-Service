@@ -46,9 +46,9 @@ do
     sleep 30s
     nova floating-ip-associate $instance_name $floating_ip
     echo "Machine-Information:"$instance_name":"$floating_ip
-    ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
-    docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$instance_name
-    docker-machine regenerate-certs "dm-"$instance_name
+    #ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
+    #docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$instance_name
+    #docker-machine regenerate-certs "dm-"$instance_name
 
   x=$(( $x + 1 ))
 done

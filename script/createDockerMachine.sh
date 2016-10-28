@@ -12,7 +12,7 @@ x=1
 ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
 while [ $x -le 200 ]
 do
-    if ssh $floating_ip 'exit'; then
+    if ssh -o StrictHostKeyChecking=no $floating_ip 'exit'; then
         #echo "success"
         break
     else
@@ -26,5 +26,5 @@ then
 else
     echo "success"
     docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/id_rsa.pub --generic-ip-address $floating_ip "dm-"$instance_name
-    #docker-machine regenerate-certs "dm-"$instance_name
+    docker-machine regenerate-certs "dm-"$instance_name
 fi
