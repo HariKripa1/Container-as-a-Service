@@ -57,7 +57,7 @@ def create_cluster(c):
         nodes=output.split('\n')
         j = 0
         for i in nodes:
-            n=re.match('Machine name : (.*),(.*)',i)
+            n=re.match('Machine-Information:(.*),(.*)',i)
             if n:
                 name=n.group(1)
                 ip=n.group(2)
