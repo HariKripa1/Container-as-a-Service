@@ -13,10 +13,18 @@ router_name="router_"$user_name
 source openrc $user_name $project_name
 env|grep OS
 
+<<<<<<< HEAD
 test -f ~/.ssh/$user_name.pub || ssh-keygen -t rsa -N "" -f ~/.ssh/$user_name
 nova keypair-add --pub-key ~/.ssh/$user_name.pub $user_name"key"
 nova secgroup-add-rule $SECURITY_GROUP_NAME icmp -1 -1 0.0.0.0/0
 nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 22 22 0.0.0.0/0
+=======
+#test -f ~/.ssh/$user_name.pub || ssh-keygen -t rsa -N "" -f ~/.ssh/$user_name
+nova keypair-add --pub-key ~/.ssh/id_rsa.pub $user_name"key"
+nova secgroup-add-rule $SECURITY_GROUP_NAME icmp -1 -1 0.0.0.0/0
+nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 22 22 0.0.0.0/0
+nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 1 65535 0.0.0.0/0
+>>>>>>> 19c7c76111b8d783ab65c8524ec1725e1ae26447
 neutron net-create $network_name
 network_id=$(neutron net-list | grep $network_name | awk '{print $2}')
 neutron subnet-create $network_name 10.0.1.0/24 --name $sub_name
@@ -33,14 +41,20 @@ END
 x=1
 while [ $x -le $inst_no ]
 do
-    nova boot --flavor d1 --image $image_id --user-data inst-config.txt --nic net-id=$network_id --security-group default --key-name $user_name"key" $user_name"-instance-"$x
-    nova_id=$(nova list | grep $user_name"-instance-"$x | awk '{print $2}')
+    instance_name=$user_name"-instance-"$(( $x - 1 ))
+    if [ $x -eq 1 ] 
+	then
+        instance_name=$user_name"-master"
+    fi
+    nova boot --flavor d1 --image $image_id --user-data inst-config.txt --nic net-id=$network_id --security-group default --key-name $user_name"key" $instance_name
+    nova_id=$(nova list | grep $instance_name| awk '{print $2}')
     floating_ip=$(nova floating-ip-create $public_net_name | grep $public_net_name |awk '{print $4}')
     echo $floating_ip
     sleep 30s
-    nova floating-ip-associate $user_name"-instance-"$x $floating_ip
+    nova floating-ip-associate $instance_name $floating_ip
+    echo "Machine-Information:"$instance_name":"$floating_ip
     #ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
-    #docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$user_name"-instance-"$x
-    #docker-machine regenerate-certs "dm-"$user_name"-instance-"$x    
+    #docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$instance_name
+    #docker-machine regenerate-certs "dm-"$instance_name
   x=$(( $x + 1 ))
 done

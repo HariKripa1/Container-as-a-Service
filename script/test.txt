@@ -1,0 +1,81 @@
+WARNING: setting legacy OS_TENANT_NAME to support cli tools.
+OS_REGION_NAME=RegionOne
+OS_PROJECT_NAME=project_kasirajan
+OS_IDENTITY_API_VERSION=2.0
+OS_PASSWORD=123456
+OS_AUTH_URL=http://172.17.0.1:5000/v2.0
+OS_USERNAME=kasirajan
+OS_TENANT_NAME=project_kasirajan
+OS_VOLUME_API_VERSION=2
+OS_NO_CACHE=1
+LESSCLOSE=/usr/bin/lesspipe %s %s
++--------------------------------------+-----------------------------------------------+
+| Property                             | Value                                         |
++--------------------------------------+-----------------------------------------------+
+| OS-DCF:diskConfig                    | MANUAL                                        |
+| OS-EXT-AZ:availability_zone          |                                               |
+| OS-EXT-STS:power_state               | 0                                             |
+| OS-EXT-STS:task_state                | scheduling                                    |
+| OS-EXT-STS:vm_state                  | building                                      |
+| OS-SRV-USG:launched_at               | -                                             |
+| OS-SRV-USG:terminated_at             | -                                             |
+| accessIPv4                           |                                               |
+| accessIPv6                           |                                               |
+| adminPass                            | GQsS9xKxJe96                                  |
+| config_drive                         |                                               |
+| created                              | 2016-10-28T03:56:59Z                          |
+| description                          | -                                             |
+| flavor                               | ds512M (d1)                                   |
+| hostId                               |                                               |
+| id                                   | 5b86403a-4368-455e-8b87-8dff7b47128e          |
+| image                                | ubuntu (15795244-58ab-43f0-b6bf-b92e2f985a94) |
+| key_name                             | kasirajankey                                  |
+| locked                               | False                                         |
+| metadata                             | {}                                            |
+| name                                 | kasirajan-master                              |
+| os-extended-volumes:volumes_attached | []                                            |
+| progress                             | 0                                             |
+| security_groups                      | default                                       |
+| status                               | BUILD                                         |
+| tags                                 | []                                            |
+| tenant_id                            | a4b5eeaeebf74d8c85dfeb3e53678782              |
+| updated                              | 2016-10-28T03:56:58Z                          |
+| user_id                              | fad7643daa2a49a69fff65d3b7ecdcaf              |
++--------------------------------------+-----------------------------------------------+
+192.168.1.22
+Machine-Information:kasirajan-master:192.168.1.22
++--------------------------------------+-----------------------------------------------+
+| Property                             | Value                                         |
++--------------------------------------+-----------------------------------------------+
+| OS-DCF:diskConfig                    | MANUAL                                        |
+| OS-EXT-AZ:availability_zone          |                                               |
+| OS-EXT-STS:power_state               | 0                                             |
+| OS-EXT-STS:task_state                | scheduling                                    |
+| OS-EXT-STS:vm_state                  | building                                      |
+| OS-SRV-USG:launched_at               | -                                             |
+| OS-SRV-USG:terminated_at             | -                                             |
+| accessIPv4                           |                                               |
+| accessIPv6                           |                                               |
+| adminPass                            | 73TnhpKbbvB7                                  |
+| config_drive                         |                                               |
+| created                              | 2016-10-28T03:57:47Z                          |
+| description                          | -                                             |
+| flavor                               | ds512M (d1)                                   |
+| hostId                               |                                               |
+| id                                   | 056487b0-4d54-4678-9d60-a4985b83666b          |
+| image                                | ubuntu (15795244-58ab-43f0-b6bf-b92e2f985a94) |
+| key_name                             | kasirajankey                                  |
+| locked                               | False                                         |
+| metadata                             | {}                                            |
+| name                                 | kasirajan-instance-1                          |
+| os-extended-volumes:volumes_attached | []                                            |
+| progress                             | 0                                             |
+| security_groups                      | default                                       |
+| status                               | BUILD                                         |
+| tags                                 | []                                            |
+| tenant_id                            | a4b5eeaeebf74d8c85dfeb3e53678782              |
+| updated                              | 2016-10-28T03:57:47Z                          |
+| user_id                              | fad7643daa2a49a69fff65d3b7ecdcaf              |
++--------------------------------------+-----------------------------------------------+
+192.168.1.8
+Machine-Information:kasirajan-instance-1:192.168.1.8
