@@ -34,8 +34,9 @@ END
 x=1
 while [ $x -le $inst_no ]
 do
-    instance_name=$user_name"-instance-"$x
-    if [ $x -eq 1 ] then
+    instance_name=$user_name"-instance-"$(( $x - 1 ))
+    if [ $x -eq 1 ] 
+	then
         instance_name=$user_name"-master"
     fi
     nova boot --flavor d1 --image $image_id --user-data inst-config.txt --nic net-id=$network_id --security-group default --key-name $user_name"key" $instance_name
@@ -44,10 +45,10 @@ do
     echo $floating_ip
     sleep 30s
     nova floating-ip-associate $instance_name $floating_ip
-
-    #ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
-    #docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$user_name"-instance-"$x
-    #docker-machine regenerate-certs "dm-"$user_name"-instance-"$x
+    echo "Machine-Information:"$instance_name":"$floating_ip
+    ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
+    docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$instance_name
+    docker-machine regenerate-certs "dm-"$instance_name
 
   x=$(( $x + 1 ))
 done
