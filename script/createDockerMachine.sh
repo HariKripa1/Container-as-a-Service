@@ -25,6 +25,6 @@ then
 else
     echo "success"
     ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
-    docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$instance_name
+    docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/id_rsa.pub --generic-ip-address $floating_ip "dm-"$instance_name
     docker-machine regenerate-certs "dm-"$user_name"-instance-"$x
 fi
