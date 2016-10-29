@@ -48,7 +48,7 @@ class DockerSwarm(object):
 		print response
 
 
-
+#{u'ID': u'02fn2qq2tbe07bmnxboop2iik', u'Version': {u'Index': 11}, u'UpdatedAt': u'2016-10-29T03:11:23.578188221Z', u'JoinTokens': {u'Manager': u'SWMTKN-1-2s3ypk9js8vmzp87p47k94ygx4ovgx0r1x0yrwwzgt9ftun6ug-3cz256ilhxpz1q5066rtzsvmy', u'Worker': u'SWMTKN-1-2s3ypk9js8vmzp87p47k94ygx4ovgx0r1x0yrwwzgt9ftun6ug-f07d83dxo6o3mcwzblloisljq'}, u'Spec': {u'Name': u'default', u'TaskDefaults': {}, u'Orchestration': {u'TaskHistoryRetentionLimit': 10}, u'Raft': {u'HeartbeatTick': 1, u'LogEntriesForSlowFollowers': 1200, u'ElectionTick': 3, u'SnapshotInterval': 5000}, u'CAConfig': {u'NodeCertExpiry': 7776000000000000}, u'Dispatcher': {u'HeartbeatPeriod': 5000000000}}, u'CreatedAt': u'2016-10-29T03:11:23.558303312Z'}
 
 
 
