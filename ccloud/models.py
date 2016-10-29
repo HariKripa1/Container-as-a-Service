@@ -16,18 +16,26 @@ class Cluster(models.Model):
     STATUS_CREATE_FAILED = 'STATUS_CREATE_FAILED'
     STATUS_MODIFY_FAILED = 'STATUS_MODIFY_FAILED'
     STATUS_DELETE_FAILED = 'STATUS_DELETE_FAILED'
+    STATUS_NODE_COMPLETE = 'STATUS_NODE_COMPLETE'    
+    STATUS_NODE_FAILED = 'STATUS_NODE_FAILED'
+    STATUS_DM_CREATED = 'STATUS_DM_CREATED'
+    STATUS_DM_FAILED = 'STATUS_DM_FAILED'
     STATUS_CHOICES = (
         (STATUS_FORCREATE,'Creation in progress'),
+        (STATUS_NODE_COMPLETE,'Creation in progress'),
         (STATUS_FORMODIFY,'Modification in progress'),
+        (STATUS_NODE_FAILED,'Deletion in progress'),
         (STATUS_FORDELETE,'Deletion in progress'),
         (STATUS_CREATED,'Created'),
         (STATUS_DELETED,'Delete'),
         (STATUS_MODIFIED,'Modified'),
         (STATUS_CREATE_FAILED,'Clutser creation failed'),
         (STATUS_MODIFY_FAILED,'Cluster redeployment failed'),
-        (STATUS_DELETE_FAILED,'Cluster deletion failed')
+        (STATUS_DELETE_FAILED,'Cluster deletion failed'),
+        (STATUS_DM_CREATED,'Docker machine created'),
+        (STATUS_DM_FAILED,'Docker machine failed')
     )
-    cluster_name = models.CharField(max_length=200)
+    cluster_name = models.CharField(max_length=200,unique=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     status=models.CharField(max_length=100,choices=STATUS_CHOICES)
     no_of_instances = models.IntegerField()
@@ -56,6 +64,8 @@ class Node(models.Model):
     STATUS_CREATE_FAILED = 'STATUS_CREATE_FAILED'
     STATUS_MODIFY_FAILED = 'STATUS_MODIFY_FAILED'
     STATUS_DELETE_FAILED = 'STATUS_DELETE_FAILED'
+    STATUS_DM_CREATED = 'STATUS_DM_CREATED'
+    STATUS_DM_FAILED = 'STATUS_DM_FAILED'
     STATUS_CHOICES = (
         (STATUS_FORCREATE,'Creation in progress'),
         (STATUS_FORMODIFY,'Modification in progress'),
@@ -65,7 +75,9 @@ class Node(models.Model):
         (STATUS_MODIFIED,'Modified'),
         (STATUS_CREATE_FAILED,'Node creation failed'),
         (STATUS_MODIFY_FAILED,'Node redeployment failed'),
-        (STATUS_DELETE_FAILED,'Node deletion failed')
+        (STATUS_DELETE_FAILED,'Node deletion failed'),
+        (STATUS_DM_CREATED,'Docker machine created'),
+        (STATUS_DM_FAILED,'Docker machine failed')
     )
     cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     machine_ip = models.CharField(max_length=200)
@@ -83,6 +95,8 @@ class Openstack_User(models.Model):
         (USER,'User')
     )
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)    
+    username = models.CharField(max_length=200)
+    password = models.CharField(max_length=200) 
     projectname = models.CharField(max_length=200)
     role = models.CharField(max_length=1,choices=LOOKUP_CHOICES)
     def __str__(self):

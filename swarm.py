@@ -3,7 +3,7 @@ import docker.tls as tls
 class DockerSwarm(object):
 	#path='/Users/kasi-mac/.docker/machine/machines/'
 	def init_manager(self,machine_name,ip_address):
-		#cli = Client(base_url='unix://var/run/docker.sock')
+		cli = Client(base_url='unix://var/run/docker.sock')
 		path='/Users/kasi-mac/.docker/machine/machines/'
 		url='tcp://'+ip_address+':2376'
 		listen_address='0.0.0.0:5000'
@@ -20,7 +20,7 @@ class DockerSwarm(object):
 		print swarm_info
 
 	def join_swarm(self,machine_name,ip_address,master_ip,token):
-		#cli = Client(base_url='unix://var/run/docker.sock')
+		cli = Client(base_url='unix://var/run/docker.sock')
 		path='/Users/kasi-mac/.docker/machine/machines/'
 		machine_url='tcp://'+ip_address+':2376'
 		listen_address=ip_address+':5000'
@@ -34,8 +34,8 @@ class DockerSwarm(object):
   			remote_addrs=[remote_address], join_token=token,
   			listen_addr=listen_address, advertise_addr=listen_address)
 		print response
-		#swarm_info=cli.inspect_swarm()
-		#print swarm_info
+		swarm_info=cli.inspect_swarm()
+		print swarm_info
 
 
 	def leave_swarm(self,machine_name,ip_address):
@@ -46,10 +46,6 @@ class DockerSwarm(object):
 		cli = Client(base_url=url, tls=tls_config)
 		response=cli.leave_swarm(force=True)
 		print response
-
-
-
-
 
 
 

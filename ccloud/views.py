@@ -26,6 +26,7 @@ from keystoneclient.v2_0 import client
 import pika
 import sys
 import os
+import subprocess
 ##get project directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from django.core.wsgi import get_wsgi_application
@@ -47,6 +48,19 @@ def send(rid):
                         routing_key='reqqueue',
                         body=rid)
     print(" [x] Sent 'Hello World!'" + rid)
+    connection.close()
+    return HttpResponseRedirect('/ccloud/thanks/')
+
+def sendClusterReq(rid):
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='clusterQueue')
+
+    channel.basic_publish(exchange='',
+                        routing_key='clusterQueue',
+                        body=rid)
+    print(" [x] Sent request for cluster " + rid)
     connection.close()
     return HttpResponseRedirect('/ccloud/thanks/')
 
@@ -92,21 +106,24 @@ def register(request):
         if user_form.is_valid():
             # Save the user's form data to the database.
             user = user_form.save()
-
+            password = user.password
             # Now we hash the password with the set_password method.
             # Once hashed, we can update the user object.
             user.set_password(user.password)
             user.save()
             registered = True
-            
+            print str(user.username)
+            print str(password)
+            #output = subprocess.check_output(['./script/createUser.sh',str(user.username),str(password)])
+            #print output
             auth_url='http://10.0.2.15:5000/v2.0'
             auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
             sess = session.Session(auth=auth)
             keystone = client.Client(session=sess)
             keystone.tenants.list() 
             username=user.username
-            password=user.password
-            tenant_name=username+"project"
+            password=password
+            tenant_name="project_"+username
             keystone.tenants.create(tenant_name=tenant_name,description="Default Tenant", enabled=True)
             tenants = keystone.tenants.list()
             my_tenant = [x for x in tenants if x.name==tenant_name][0]
@@ -118,12 +135,13 @@ def register(request):
                 my_role = keystone.roles.create('user')
             if my_role is None:
                 my_role = keystone.roles.create('user')
+            print my_role    
             keystone.roles.add_user_role(my_user, my_role, my_tenant)
             service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
             keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://10.0.2.15:8774/v2/%(tenant_id)s", adminurl="http://10.0.2.15:8774/v2/%(tenant_id)s", internalurl="http://10.0.2.15:8774/v2/%(tenant_id)s")
-            openstackuser=Openstack_User(user_id=user,projectname=tenant_name,role="user")
+            openstackuser=Openstack_User(user_id=user,username=str(username),password=str(password),projectname="project_"+str(username),role="user")
             openstackuser.save()
-        # Invalid form or forms - mistakes or something else?
+        # Invalid form or forms -  or something else?
         # Print problems to the terminal.
         # They'll also be shown to the user.
         else:
@@ -137,9 +155,6 @@ def register(request):
     return render(request,
             'ccloud/register.html',
             {'user_form': user_form, 'registered': registered})
-
-
-
 def user_login(request):
     if request.method=='POST':
     	username=request.POST['username']
@@ -147,7 +162,7 @@ def user_login(request):
     	user=authenticate(username=username,password=password)
     	try:
             auth_url='http://10.0.2.15:5000/v2.0'
-            auth = v2.Password(username=username, password=password,tenant_name=username+"project", auth_url=auth_url)
+            auth = v2.Password(username=username, password=password,tenant_name="project_"+username, auth_url=auth_url)
             sess = session.Session(auth=auth)
             keystone = client.Client(session=sess)
     	except:
@@ -157,7 +172,7 @@ def user_login(request):
     		if user.is_active:
     			login(request,user)    			
     			request.session['username'] = username
-    			request.session['tenant_name'] = username+"project"
+    			request.session['tenant_name'] = "project_"+username
     			return HttpResponseRedirect('/ccloud/userHome/')
     		else:
     			return HttpResponse("Your CCloud Account is disabled")
@@ -292,23 +307,30 @@ def getClusterHome(request):
 def getaddclusterPage(request):
     form = AddClusterPage(request.POST)
     print('fasdsas');
-    addflg = False;    
-    username=request.session.get('username')
+    addflg = False;  
+    message = ''
     if form.is_valid():
             # add in db
             print('addd cluster')
             form.cleaned_data['clustername']            
             message = "add request sent for "+form.cleaned_data['clustername']
-            context = {'message' : message}
-            addflg = True;             
+            clustername = form.cleaned_data['clustername']
+            username=request.session.get('username')            
+            if Cluster.objects.filter(cluster_name=clustername).exists():
+                message = 'Cluster name already in use'
+                return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg,'message':message})
+            message = 'Request sent for adding cluster!!'            
+            context = {'message' : message}         
+            addflg = True;    
             user = User.objects.get(username=username)           
             cluster=Cluster(cluster_name=form.cleaned_data['clustername'],user_id=user,status=Cluster.STATUS_FORCREATE,no_of_instances=0,requested_no_of_instance=form.cleaned_data['noOfNodes'],creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
             cluster.save()
-            return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg})
+            sendClusterReq(str(cluster.id))
+            return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg,'message':message})
     else:
         print('add page 2')
         form = AddClusterPage()                
-    return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg})
+    return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg,'message':message})
 
 
 @login_required
@@ -318,6 +340,7 @@ def getmodifyclusterPage(request):
     addflg = False;    
     username=request.session.get('username')
     cid = '';
+    user = User.objects.get(username=username)    
     c='';
     modorview=False;
     message=''
@@ -337,6 +360,12 @@ def getmodifyclusterPage(request):
         print(cid)        
         addflg = True; 
         message = "Delete request sent for "+cid
+        cluster = Cluster.objects.get(id=cid)        
+        cluster.user_id=user        
+        cluster.status=Container.STATUS_FORDELETE           
+        cluster.creation_date=datetime.now()
+        cluster.last_update_date=datetime.now()        
+        cluster.save()#update instead of insert
         return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
     elif form.is_valid():
             # add in db

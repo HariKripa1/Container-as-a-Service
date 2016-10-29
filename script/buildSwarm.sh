@@ -13,11 +13,18 @@ router_name="router_"$user_name
 source openrc $user_name $project_name
 env|grep OS
 
+<<<<<<< HEAD
+test -f ~/.ssh/$user_name.pub || ssh-keygen -t rsa -N "" -f ~/.ssh/$user_name
+nova keypair-add --pub-key ~/.ssh/$user_name.pub $user_name"key"
+nova secgroup-add-rule $SECURITY_GROUP_NAME icmp -1 -1 0.0.0.0/0
+nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 22 22 0.0.0.0/0
+=======
 #test -f ~/.ssh/$user_name.pub || ssh-keygen -t rsa -N "" -f ~/.ssh/$user_name
 nova keypair-add --pub-key ~/.ssh/id_rsa.pub $user_name"key"
 nova secgroup-add-rule $SECURITY_GROUP_NAME icmp -1 -1 0.0.0.0/0
 nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 22 22 0.0.0.0/0
 nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 1 65535 0.0.0.0/0
+>>>>>>> 19c7c76111b8d783ab65c8524ec1725e1ae26447
 neutron net-create $network_name
 network_id=$(neutron net-list | grep $network_name | awk '{print $2}')
 neutron subnet-create $network_name 10.0.1.0/24 --name $sub_name
@@ -27,7 +34,7 @@ neutron router-gateway-set $router_name $public_net_name
 neutron router-interface-add $router_name $sub_name
 image_id=$(openstack image list | grep ubuntu | awk '{print $2}')
 cat > inst-config.txt << END
-#cloud-config
+cloud-config
 hostname: ubun
 manage_etc_hosts: true
 END
@@ -45,10 +52,17 @@ do
     echo $floating_ip
     sleep 30s
     nova floating-ip-associate $instance_name $floating_ip
+<<<<<<< HEAD
     echo "Machine-Information:"$instance_name":"$floating_ip
     #ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
     #docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$instance_name
     #docker-machine regenerate-certs "dm-"$instance_name
 
+=======
+    echo "Machine-Information:"$instance_name","$floating_ip
+    #ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R $floating_ip
+    #docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/$user_name".pub" --generic-ip-address $floating_ip "dm-"$instance_name
+    #docker-machine regenerate-certs "dm-"$instance_name
+>>>>>>> e03f3b764577bbb80e14131ce9cfca89de7dcb08
   x=$(( $x + 1 ))
 done
