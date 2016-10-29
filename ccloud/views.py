@@ -121,7 +121,7 @@ def register(request):
             #sess = session.Session(auth=auth)
             #keystone = client.Client(session=sess)
             #keystone.tenants.list() 
-            #username=user.username
+            username=user.username
             #password=password
             #tenant_name="project_"+username
             #keystone.tenants.create(tenant_name=tenant_name,description="Default Tenant", enabled=True)
