@@ -48,11 +48,13 @@ def create_cluster(c):
         print c.user_id
         openstackuser = Openstack_User.objects.get(user_id=c.user_id)
         user = c.user_id
-        print user.username
-        print user.password
+        print openstackuser.username
+        print openstackuser.password
         print openstackuser.projectname
         print c.requested_no_of_instance
-        output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
+	print c.id
+        output = subprocess.check_output(['./script/buildSwarm.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(c.requested_no_of_instance),str(c.id)])
+	print 'entering output'
         print output
         nodes=output.split('\n')
         j = 0

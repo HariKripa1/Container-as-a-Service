@@ -3,8 +3,8 @@ import docker.tls as tls
 class DockerSwarm(object):
 	#path='/Users/kasi-mac/.docker/machine/machines/'
 	def init_manager(self,machine_name,ip_address):
-		cli = Client(base_url='unix://var/run/docker.sock')
-		path='/Users/kasi-mac/.docker/machine/machines/'
+		#cli = Client(base_url='unix://var/run/docker.sock')
+		path='/home/ubuntu/.docker/machine/machines/'
 		url='tcp://'+ip_address+':2376'
 		listen_address='0.0.0.0:5000'
 		tls_config = tls.TLSConfig(client_cert=(path+machine_name+'/cert.pem', path+machine_name+'/key.pem'), 
@@ -20,8 +20,8 @@ class DockerSwarm(object):
 		print swarm_info
 
 	def join_swarm(self,machine_name,ip_address,master_ip,token):
-		cli = Client(base_url='unix://var/run/docker.sock')
-		path='/Users/kasi-mac/.docker/machine/machines/'
+		#cli = Client(base_url='unix://var/run/docker.sock')
+		path='/home/ubuntu/.docker/machine/machines/'
 		machine_url='tcp://'+ip_address+':2376'
 		listen_address=ip_address+':5000'
 		remote_address=master_ip+':5000'
@@ -39,7 +39,7 @@ class DockerSwarm(object):
 
 
 	def leave_swarm(self,machine_name,ip_address):
-		path='/Users/kasi-mac/.docker/machine/machines/'
+		path='/home/ubuntu/.docker/machine/machines/'
 		url='tcp://'+ip_address+':2376'
 		tls_config = tls.TLSConfig(client_cert=(path+machine_name+'/cert.pem', path+machine_name+'/key.pem'), 
 			ca_cert=path+machine_name+'/ca.pem', verify=True)

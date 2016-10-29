@@ -26,5 +26,5 @@ then
 else
     echo "success"
     docker-machine create -d generic --generic-ssh-user ubuntu --generic-ssh-key ~/.ssh/id_rsa.pub --generic-ip-address $floating_ip "dm-"$instance_name
-    docker-machine regenerate-certs "dm-"$instance_name
+    yes y | docker-machine regenerate-certs "dm-"$instance_name
 fi
