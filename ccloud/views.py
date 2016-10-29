@@ -116,29 +116,29 @@ def register(request):
             print str(password)
             #output = subprocess.check_output(['./script/createUser.sh',str(user.username),str(password)])
             #print output
-            auth_url='http://10.0.2.15:5000/v2.0'
-            auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
-            sess = session.Session(auth=auth)
-            keystone = client.Client(session=sess)
-            keystone.tenants.list() 
-            username=user.username
-            password=password
-            tenant_name="project_"+username
-            keystone.tenants.create(tenant_name=tenant_name,description="Default Tenant", enabled=True)
-            tenants = keystone.tenants.list()
-            my_tenant = [x for x in tenants if x.name==tenant_name][0]
-            my_user = keystone.users.create(name=username,password=password,tenant_id=my_tenant.id)
-            roles = keystone.roles.list()
-            try:
-                my_role = [x for x in roles if x.name=='user'][0]
-            except:    
-                my_role = keystone.roles.create('user')
-            if my_role is None:
-                my_role = keystone.roles.create('user')
-            print my_role    
-            keystone.roles.add_user_role(my_user, my_role, my_tenant)
-            service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
-            keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://10.0.2.15:8774/v2/%(tenant_id)s", adminurl="http://10.0.2.15:8774/v2/%(tenant_id)s", internalurl="http://10.0.2.15:8774/v2/%(tenant_id)s")
+            #auth_url='http://10.0.2.15:5000/v2.0'
+            #auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
+            #sess = session.Session(auth=auth)
+            #keystone = client.Client(session=sess)
+            #keystone.tenants.list() 
+            #username=user.username
+            #password=password
+            #tenant_name="project_"+username
+            #keystone.tenants.create(tenant_name=tenant_name,description="Default Tenant", enabled=True)
+            #tenants = keystone.tenants.list()
+            #my_tenant = [x for x in tenants if x.name==tenant_name][0]
+            #my_user = keystone.users.create(name=username,password=password,tenant_id=my_tenant.id)
+            #roles = keystone.roles.list()
+            #try:
+            #    my_role = [x for x in roles if x.name=='user'][0]
+            #except:    
+            #    my_role = keystone.roles.create('user')
+            #if my_role is None:
+            #    my_role = keystone.roles.create('user')
+            #print my_role    
+            #keystone.roles.add_user_role(my_user, my_role, my_tenant)
+            #service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
+            #keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://10.0.2.15:8774/v2/%(tenant_id)s", adminurl="http://10.0.2.15:8774/v2/%(tenant_id)s", internalurl="http://10.0.2.15:8774/v2/%(tenant_id)s")
             openstackuser=Openstack_User(user_id=user,username=str(username),password=str(password),projectname="project_"+str(username),role="user")
             openstackuser.save()
         # Invalid form or forms -  or something else?
@@ -160,14 +160,14 @@ def user_login(request):
     	username=request.POST['username']
     	password=request.POST['password']
     	user=authenticate(username=username,password=password)
-    	try:
-            auth_url='http://10.0.2.15:5000/v2.0'
-            auth = v2.Password(username=username, password=password,tenant_name="project_"+username, auth_url=auth_url)
-            sess = session.Session(auth=auth)
-            keystone = client.Client(session=sess)
-    	except:
-            print "Invalid login details: {0}, {1}".format(username, password)
-            return HttpResponse("Invalid login details supplied.")
+    	#try:
+        #    auth_url='http://10.0.2.15:5000/v2.0'
+        #    auth = v2.Password(username=username, password=password,tenant_name="project_"+username, auth_url=auth_url)
+        #    sess = session.Session(auth=auth)
+        #    keystone = client.Client(session=sess)
+    	#except:
+        #    print "Invalid login details: {0}, {1}".format(username, password)
+        #    return HttpResponse("Invalid login details supplied.")
     	if user:
     		if user.is_active:
     			login(request,user)    			
