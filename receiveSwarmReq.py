@@ -42,12 +42,14 @@ def callback(ch, method, properties, body):
             print n.machine_ip
             print n.machine_name
             if n.master == 'Y':
-                d.init_manager('dm-'+n.machine_name,n.machine_ip)
+                response = d.init_manager('dm-'+n.machine_name,n.machine_ip)
                 print 'init manager'
                 print n.machine_ip
                 print n.machine_name
-                #response = json.loads(res)
-                #print response
+                print response['JoinTokens']['Worker']
+                token = response['JoinTokens']['Worker']
+                c.token_id = token
+                c.save()
                 n.status=Node.STATUS_SWARM_CREATED
                 n.save()
             else:
