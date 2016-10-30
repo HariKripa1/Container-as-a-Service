@@ -7,12 +7,19 @@
   <body>
   <p> Add container </p>
   {% if addflg %}
+  {% if cors == "c"  %}
    <strong>Request sent for adding container!! </strong>
    <a href="/ccloud/mainPage">Return to the homepage.</a><br />
   {% else %}
+    <strong>Request sent for adding service!! </strong>
+    <a href="/ccloud/clusterHome">Return to the homepage.</a><br/>
+  {% endif %} 
+  {% else %}
   <form id="addPage" action="/ccloud/addPage/" method="post">
     {% csrf_token %}
-    {{ form.as_p }}    
+    {{ form.as_p }}   
+    <input type="hidden" name="cors" value={{cors}} />
+    <input type="hidden" name="cid" value={{cid}} />
     <input type="submit" name="Add" value="Add Container" /> 
   </form>
   {% endif %}

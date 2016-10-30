@@ -22,21 +22,27 @@
         </tr>        
     {% endfor %}        
     </table>
+  <form id="addPage" action="/ccloud/addPage/" method="post">  
+  {% csrf_token %}
   <strong> <p> Services in each node in {{cid}}</p> </strong> 
   <table border=1>
-    <tr><td>Service</td><td>Service ID</td></tr>
-    {% for c in node %}
+    <tr><td>Service Name</td><td>Service GIT URL</td></tr>
+    {% for c in service %}
         <tr>
-            <td>{{c.id}}</td>
-            <td>{{c.name}}</td>                
+            <td>{{c.container_name}}</td>
+            <td>{{c.git_url}}</td>                
         </tr>        
     {% endfor %}        
     </table>
+    <input type="hidden" name="cors" value='s' />
+    <input type="hidden" name="cid" value={{cid}} />
+    <input type="submit" name="Add" value="Add Container" /> 
+  </form>  
   {% if modorview %}
   <strong>  <p> No of nodes to be added </p> </strong> 
   <form id="modifyclusterPage" action="/ccloud/modifyclusterPage/" method="post">
     {% csrf_token %}
-    {{ form.as_p }}   
+    {{ form.as_p }}       
     <input type="hidden" name="cid" value={{cid}} />
     <input type="submit" name="Modify" value="Modify Cluster" /> 
   </form>  
