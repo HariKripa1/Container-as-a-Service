@@ -40,7 +40,7 @@ cloud-config
 hostname: ubun
 manage_etc_hosts: true
 END
-x=$inst_no+1
+x=$(($inst_no + 1))
 while [ $x -le $new_inst_no ]
 do
     instance_name=$user_name"-"$cluster_id"-instance-"$(( $x - 1 ))

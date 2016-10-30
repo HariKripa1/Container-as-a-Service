@@ -23,12 +23,12 @@ import docker.tls as tls
 import subprocess
 import re
 import swarm
-
+import json
 connection = pika.BlockingConnection(pika.ConnectionParameters(
         host='localhost'))
 channel = connection.channel()
 
-channel.queue_declare(queue='clusterQueue')
+channel.queue_declare(queue='swarmQueue')
 
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
@@ -38,19 +38,28 @@ def callback(ch, method, properties, body):
     node = Node.objects.filter(cluster_id=c.id)
     d=swarm.DockerSwarm()
     for n in node:   
-        print n.machine_ip
-        print n.machine_name
-        if n.master == 'Y':
-            d.init_manager(n.machine_name,n.machine_ip)
-            print 'init manager'
+        if n.status == Node.STATUS_DM_CREATED:
             print n.machine_ip
             print n.machine_name
-        else:
-            d.join_swarm(n.machine_name,n.machine_ip,c.master_ip,c.token_id)            
-            print 'join swarm'
-            print n.machine_ip
-            print n.machine_name
-        
+            if n.master == 'Y':
+                d.init_manager('dm-'+n.machine_name,n.machine_ip)
+                print 'init manager'
+                print n.machine_ip
+                print n.machine_name
+                #response = json.loads(res)
+                #print response
+                n.status=Node.STATUS_SWARM_CREATED
+                n.save()
+            else:
+                d.join_swarm('dm-'+n.machine_name,n.machine_ip,c.master_ip,c.token_id)            
+                print 'join swarm'
+                print n.machine_ip
+                print n.machine_name
+                n.status=Node.STATUS_SWARM_CREATED
+                n.save()
+    c.status=Cluster.STATUS_SWARM_CREATED
+    c.save()
+    
 channel.basic_consume(callback,
                       queue='swarmQueue',
                       no_ack=True)

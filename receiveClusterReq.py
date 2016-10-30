@@ -52,10 +52,14 @@ def create_cluster(c):
         print openstackuser.password
         print openstackuser.projectname
         print c.requested_no_of_instance
-	print c.id
-        output = subprocess.check_output(['./script/buildSwarm.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(c.requested_no_of_instance),str(c.id)])
-	print 'entering output'
-        print output
+        cluster_count = Cluster.objects.filter(user_id=c.user_id).count()
+        print cluster_count
+        if cluster_count > 1:
+            output = subprocess.check_output(['./script/buildSwarmNext.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(c.requested_no_of_instance),str(c.id)])
+            print output
+        else:    
+            output = subprocess.check_output(['./script/buildSwarm.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(c.requested_no_of_instance),str(c.id)])
+            print output
         nodes=output.split('\n')
         j = 0
         for i in nodes:
@@ -72,6 +76,8 @@ def create_cluster(c):
                 j=j+1    
                 node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED)
                 node.save()        
+                c.no_of_instances = c.requested_no_of_instance
+                c.save()
         return error,errmsg
     except Exception as inst:
 	print inst.args
@@ -81,17 +87,45 @@ def modify_cluster(c):
     error = False
     errmsg= ''    
     try:
+        print 'modify cluster'
         print c.user_id
         openstackuser = Openstack_User.objects.get(user_id=c.user_id)
         user = c.user_id
-        print user.username
-        print user.password
+        print openstackuser.username
+        print openstackuser.password
         print openstackuser.projectname
         print c.requested_no_of_instance
-        #call modify script
-        #output = subprocess.check_output([user.username,user.password,openstackuser.projectname,c.requested_no_of_instance])
-        #print output         
-        return error,errmsg
+        print c.no_of_instances        
+        if c.requested_no_of_instance > c.no_of_instances:   
+            print 'if'
+            output = subprocess.check_output(['./script/modifySwarm.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(c.no_of_instances),str(c.requested_no_of_instance),str(c.id)])
+            print output     
+            nodes=output.split('\n')        
+            for i in nodes:
+                n=re.match('Machine-Information:(.*),(.*)',i)
+                if n:
+                    name=n.group(1)
+                    ip=n.group(2)
+                    master='N'
+                    print name
+                    print ip
+                    node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED)
+                    node.save()        
+                    c.no_of_instances = c.requested_no_of_instance
+                    c.save()
+            return error,errmsg        
+        else:
+            print 'else'
+            diff = int(c.no_of_instances) - int(c.requested_no_of_instance)
+            node = Node.objects.filter(cluster_id=c.id).order_by('-machine_ip')[:diff]
+            for n in node:
+                print n.machine_name
+                output = subprocess.check_output(['./script/deleteSwarmnode.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(n.machine_name)])
+                print output 
+                n.delete()
+            c.no_of_instances = c.requested_no_of_instance
+            c.save()    
+            return error,errmsg
     except Exception as inst:
 	print inst.args
         return True,'Exception'
@@ -106,10 +140,14 @@ def remove_cluster(c):
         print user.username
         print user.password
         print openstackuser.projectname
-        print c.requested_no_of_instance
-        #call delete script
-        #output = subprocess.check_output([user.username,user.password,openstackuser.projectname,c.requested_no_of_instance])
-        #print output               
+        print c.requested_no_of_instance        
+        node = Node.objects.filter(cluster_id=c.id).order_by('-machine_ip')
+        for n in node:
+            print n.machine_name
+            output = subprocess.check_output(['./script/deleteSwarmnode.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(n.machine_name)])
+            print output  
+            n.delete() 
+            print 'deleted'
         return error,errmsg
     except Exception as inst:
        print inst.args
@@ -118,9 +156,11 @@ def remove_cluster(c):
     
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
-    c = Cluster.objects.get(id=body)    
-    print(c.id)
+    c = Cluster.objects.get(id=body)
+    print(c.id)    
+    print c.status
     if c.status == Cluster.STATUS_FORCREATE:
+        print 'create'
         error,errmsg = create_cluster(c)
         if error == False:
             c.status=Cluster.STATUS_NODE_COMPLETE            
@@ -130,19 +170,21 @@ def callback(ch, method, properties, body):
             c.status=Cluster.STATUS_NODE_FAILED
             c.save()
     elif c.status == Cluster.STATUS_FORMODIFY:
+        print 'modify'
         error,errmsg = modify_cluster(c)
         if error == False:
             c.status=Cluster.STATUS_NODE_COMPLETE            
-            c.save()            
+            c.save()      
+            senddockerCreate(str(c.id))            
         else:
             c.status=Cluster.STATUS_NODE_FAILED
             c.save()
     elif c.status == Cluster.STATUS_FORDELETE:
-        error,errmsg = delete_cluster(c)
+        print 'delete'
+        error,errmsg = remove_cluster(c)
         if error == False:
             c.status=Cluster.STATUS_DELETED            
-            c.save()
-            #delete from Node model
+            c.save()            
         else:
             c.status=Cluster.STATUS_DELETE_FAILED
             c.save()

@@ -114,10 +114,10 @@ def register(request):
             registered = True
             print str(user.username)
             print str(password)
-            #output = subprocess.check_output(['./script/createUser.sh',str(user.username),str(password)])
-            #print output
-            auth_url='http://172.17.0.1:5000/v2.0'
-            auth = v2.Password(username="admin", password="123456",tenant_name="admin", auth_url=auth_url)
+            output = subprocess.check_output(['./script/createUser.sh',str(user.username),str(password)])
+            print output
+            auth_url='http://10.0.2.15:5000/v2.0'
+            auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
             sess = session.Session(auth=auth)
             keystone = client.Client(session=sess)
             keystone.tenants.list() 
@@ -138,7 +138,7 @@ def register(request):
             print my_role    
             keystone.roles.add_user_role(my_user, my_role, my_tenant)
             service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
-            keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://172.17.0.1:8774/v2/%(tenant_id)s", adminurl="http://172.17.0.1:8774/v2/%(tenant_id)s", internalurl="http://172.17.0.1:8774/v2/%(tenant_id)s")
+            keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://10.0.2.15:8774/v2/%(tenant_id)s", adminurl="http://10.0.2.15:8774/v2/%(tenant_id)s", internalurl="http://10.0.2.15:8774/v2/%(tenant_id)s")
             openstackuser=Openstack_User(user_id=user,username=str(username),password=str(password),projectname="project_"+str(username),role="user")
             openstackuser.save()
         # Invalid form or forms -  or something else?
@@ -353,8 +353,10 @@ def getmodifyclusterPage(request):
         print('add page 2')        
         cid = request.POST['cid']
         print(cid)
+        cluster= Cluster.objects.get(id=cid)                    
+        node = Node.objects.filter(cluster_id=cluster).exclude(status = Cluster.STATUS_DELETED)#change to cluster once model is created
         form = ModifyClusterPage()
-        return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+        return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message,'node':node})
     elif "Delete" in request.POST:       
         cid = request.POST.get('cid', None)
         print(cid)        
@@ -366,6 +368,7 @@ def getmodifyclusterPage(request):
         cluster.creation_date=datetime.now()
         cluster.last_update_date=datetime.now()        
         cluster.save()#update instead of insert
+        sendClusterReq(str(cluster.id))
         return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
     elif form.is_valid():
             # add in db
@@ -385,6 +388,7 @@ def getmodifyclusterPage(request):
             cluster.creation_date=datetime.now()
             cluster.last_update_date=datetime.now()        
             cluster.save()           
-            node = Node.objects.filter(user_id=cluster).exclude(status = Cluster.STATUS_DELETED)#change to cluster once model is created
+            node = Node.objects.filter(cluster_id=cluster).exclude(status = Cluster.STATUS_DELETED)#change to cluster once model is created
+            sendClusterReq(str(cluster.id))
             return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message,'node': node})
     return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})

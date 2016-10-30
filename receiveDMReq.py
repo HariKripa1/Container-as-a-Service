@@ -27,7 +27,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(
         host='localhost'))
 channel = connection.channel()
 
-channel.queue_declare(queue='clusterQueue')
+channel.queue_declare(queue='dmQueue')
 
 def sendSwarm(rid):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
@@ -54,7 +54,9 @@ def create_dm(c,n):
         print n.machine_ip
         print n.machine_name
         output = subprocess.check_output(['./script/createDockerMachine.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(n.machine_ip),str(n.machine_name)])
-        print output            
+        print output        
+        n.status = Node.STATUS_DM_CREATED
+        n.save()
         return error,errmsg
     except Exception as inst:
 	print inst.args
@@ -67,16 +69,17 @@ def callback(ch, method, properties, body):
     errflg=False
     #get all node of the cluster
     node = Node.objects.filter(cluster_id=c.id)
-    for n in node:       
-        error,errmsg = create_dm(c,n)
-        if error == False:
-            c.status=Cluster.STATUS_DM_CREATED            
-            c.save()                                 
-            errflg=False 
-        else:
-            c.status=Cluster.STATUS_DM_FAILED
-            c.save()            
-            errflg=True
+    for n in node:      
+        if n.status == Node.STATUS_CREATED:
+            error,errmsg = create_dm(c,n)
+            if error == False:
+                c.status=Cluster.STATUS_DM_CREATED            
+                c.save()                                 
+                errflg=False 
+            else:
+                c.status=Cluster.STATUS_DM_FAILED
+                c.save()            
+                errflg=True                
     if errflg == False:
         sendSwarm(str(c.id))          
 channel.basic_consume(callback,
