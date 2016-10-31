@@ -35,7 +35,7 @@ public_net_name="public"
 #neutron router-interface-add $router_name $sub_name
 image_id=$(openstack image list | grep ubuntu | awk '{print $2}')
 cat > inst-config.txt << END
-cloud-config
+#cloud-config
 hostname: ubun
 manage_etc_hosts: true
 END

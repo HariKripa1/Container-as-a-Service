@@ -13,12 +13,14 @@ class DockerSwarm(object):
 		cli = Client(base_url=url, tls=tls_config)
 		spec = cli.create_swarm_spec(
 			snapshot_interval=5000, log_entries_for_slow_followers=1200)
-		response=cli.init_swarm(advertise_addr=ip_address, listen_addr=listen_address, force_new_cluster=False,swarm_spec=spec)
+		response=cli.init_swarm(
+			advertise_addr=ip_address, listen_addr=listen_address, force_new_cluster=False,
+			swarm_spec=spec)
 		#response='\'{u\'ID\': u\'02fn2qq2tbe07bmnxboop2iik\', u\'Version\': {u\'Index\': 11}, u\'UpdatedAt\': u\'2016-10-29T03:11:23.578188221Z\', u\'JoinTokens\': {u\'Manager\': u\'SWMTKN-1-2s3ypk9js8vmzp87p47k94ygx4ovgx0r1x0yrwwzgt9ftun6ug-3cz256ilhxpz1q5066rtzsvmy\', u\'Worker\': u\'SWMTKN-1-2s3ypk9js8vmzp87p47k94ygx4ovgx0r1x0yrwwzgt9ftun6ug-f07d83dxo6o3mcwzblloisljq\'}, u\'Spec\': {u\'Name\': u\'default\', u\'TaskDefaults\': {}, u\'Orchestration\': {u\'TaskHistoryRetentionLimit\': 10}, u\'Raft\': {u\'HeartbeatTick\': 1, u\'LogEntriesForSlowFollowers\': 1200, u\'ElectionTick\': 3, u\'SnapshotInterval\': 5000}, u\'CAConfig\': {u\'NodeCertExpiry\': 7776000000000000}, u\'Dispatcher\': {u\'HeartbeatPeriod\': 5000000000}}, u\'CreatedAt\': u\'2016-10-29T03:11:23.558303312Z\'}\''
-		#print response
+		print response
 		#return response
 		swarm_info=cli.inspect_swarm()
-		print swarm_info
+		return swarm_info
 
 	def join_swarm(self,machine_name,ip_address,master_ip,token):
 		cli = Client(base_url='unix://var/run/docker.sock')
@@ -44,7 +46,6 @@ class DockerSwarm(object):
 		cli = Client(base_url=url, tls=tls_config)
 		response=cli.leave_swarm(force=True)
 		return response
-	
 
 
 #{u'ID': u'02fn2qq2tbe07bmnxboop2iik', u'Version': {u'Index': 11}, u'UpdatedAt': u'2016-10-29T03:11:23.578188221Z', u'JoinTokens': {u'Manager': u'SWMTKN-1-2s3ypk9js8vmzp87p47k94ygx4ovgx0r1x0yrwwzgt9ftun6ug-3cz256ilhxpz1q5066rtzsvmy', u'Worker': u'SWMTKN-1-2s3ypk9js8vmzp87p47k94ygx4ovgx0r1x0yrwwzgt9ftun6ug-f07d83dxo6o3mcwzblloisljq'}, u'Spec': {u'Name': u'default', u'TaskDefaults': {}, u'Orchestration': {u'TaskHistoryRetentionLimit': 10}, u'Raft': {u'HeartbeatTick': 1, u'LogEntriesForSlowFollowers': 1200, u'ElectionTick': 3, u'SnapshotInterval': 5000}, u'CAConfig': {u'NodeCertExpiry': 7776000000000000}, u'Dispatcher': {u'HeartbeatPeriod': 5000000000}}, u'CreatedAt': u'2016-10-29T03:11:23.558303312Z'}
