@@ -8,5 +8,5 @@ instance_name=$4
 source openrc $user_name $project_name
 export OS_PASSWORD=$password
 env|grep OS
-docker-machine rm 'dm-'$instance_name
+docker-machine rm 'dm-'$instance_name --force
 nova delete $instance_name

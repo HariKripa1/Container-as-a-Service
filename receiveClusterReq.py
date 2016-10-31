@@ -144,7 +144,7 @@ def remove_cluster(c):
         node = Node.objects.filter(cluster_id=c.id).order_by('-machine_ip')
         for n in node:
             print n.machine_name
-            output = subprocess.check_output(['./script/deleteSwarmnode.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(n.machine_name)])
+            output = subprocess.check_output(['./script/deleteSwarmnode.sh',str(user.username),str(openstackuser.password),str(openstackuser.projectname),str(n.machine_name)])
             print output  
             n.delete() 
             print 'deleted'
