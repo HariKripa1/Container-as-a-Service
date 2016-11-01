@@ -28,7 +28,7 @@ nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 22 22 0.0.0.0/0
 nova secgroup-add-rule $SECURITY_GROUP_NAME tcp 1 65535 0.0.0.0/0
 neutron net-create $network_name
 network_id=$(neutron net-list | grep $network_name | awk '{print $2}')
-neutron subnet-create --dns-nameservers 8.8.8.8 $network_name 10.0.1.0/24 --name $sub_name
+neutron subnet-create --dns-nameserver 8.8.8.8 $network_name 10.0.1.0/24 --name $sub_name
 public_net_name="public"
 neutron router-create $router_name
 neutron router-gateway-set $router_name $public_net_name

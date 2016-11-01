@@ -1,0 +1,6 @@
+import swarm
+d=swarm.DockerSwarm()
+d.init_manager('dm-kasi01-47-master','192.168.1.16')
+d.leave_swarm('dm-kasi01-47-master','192.168.1.16')
+d.join_swarm('dm-kasi01-47-instance-1','192.168.1.17','192.168.1.16','SWMTKN-1-33clo67wzx19hxu2jfg6ca136w7cwlgnqer40i220f1u9dqchf-8z7x2mu0h98d25rwtw992ct5y')
+d.leave_swarm('dm-kasi01-47-instance-1','192.168.1.17')
