@@ -1,0 +1,6 @@
+d.init_manager('dm-kasi12345-54-master','192.168.1.8')
+
+d.leave_swarm('dm-kasi12345-54-instance-1','192.168.1.21')
+d.join_swarm('dm-kasi12345-54-instance-1','192.168.1.21','192.168.1.8','SWMTKN-1-1r355ii1513qgz97r5xqih694tm9ztdr32ejvieq9ajaptnqnh-aapuhdmb1k7cmj7gdgjt7elma')
+
+
