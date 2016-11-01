@@ -70,18 +70,13 @@ def index(request):
 @login_required
 # Create your views here.
 def get_name(request):
-    # if this is a POST request we need to process the form data
+
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
         form = NameForm(request.POST)
-        # check whether it's valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
             return HttpResponseRedirect('/ccloud/thanks/')
 
-    # if a GET (or any other method) we'll create a blank form
+
     else:
         form = NameForm()
 
@@ -89,26 +84,19 @@ def get_name(request):
 
 
 def register(request):
-    # Like before, get the request's context.
-    #context = RequestContext(request)
-
-    # A boolean value for telling the template whether the registration was successful.
-    # Set to False initially. Code changes value to True when registration succeeds.
     registered = False
 
-    # If it's a HTTP POST, we're interested in processing form data.
+ 
     if request.method == 'POST':
-        # Attempt to grab information from the raw form information.
-        # Note that we make use of both UserForm and UserProfileForm.
+        
         user_form = UserForm(data=request.POST)
 
-        # If the two forms are valid...
+       
         if user_form.is_valid():
-            # Save the user's form data to the database.
+            
             user = user_form.save()
             password = user.password
-            # Now we hash the password with the set_password method.
-            # Once hashed, we can update the user object.
+            
             user.set_password(user.password)
             user.save()
             registered = True
