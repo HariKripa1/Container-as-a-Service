@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 import os
 import sys
-from ccloud_api.serializers import UserSerializer, GroupSerializer, ClusterSerializer
+from ccloud_api.serializers import UserSerializer, GroupSerializer, ClusterSerializer, ClusterListSerializer
 from ccloud_api.permissions import IsOwnerOrReadOnly
 from django.http import Http404
 from rest_framework.views import APIView
@@ -41,11 +41,14 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class ClusterList(APIView):
+    """
+     List all clusters, or create a new cluster.
+    """
     permission_classes = (IsOwnerOrReadOnly,permissions.IsAuthenticated,)
     def get(self, request, format=None):
         clusters=Cluster.objects.filter(user_id=request.user).exclude(status = Cluster.STATUS_DELETED)
         #clusters = Cluster.objects.all()
-        serializer = ClusterSerializer(clusters, many=True,context={'request': request})
+        serializer = ClusterListSerializer(clusters, many=True,context={'request': request},partial=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -60,7 +63,67 @@ class ClusterList(APIView):
             cluster.last_update_date=datetime.now()        
             cluster.created_by=request.user.username
             cluster.save()
+            sendClusterReq(str(cluster.id))
+            
 
             #serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClusterDetail(APIView):
+    """
+    Retrieve, update or delete a cluster instance.
+    """
+    permission_classes = (IsOwnerOrReadOnly,permissions.IsAuthenticated,)
+    def get_object(self, pk):
+        try:
+            return Cluster.objects.get(pk=pk)
+        except Cluster.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        cluster = self.get_object(pk)
+        if cluster.user_id == request.user:
+            serializer = ClusterListSerializer(cluster)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def put(self, request, pk, format=None):
+        cluster = self.get_object(pk)
+        if cluster.user_id != request.user:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer = ClusterSerializer(cluster, data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            c = Cluster.objects.get(id=pk)
+            c.status=Cluster.STATUS_FORMODIFY      
+            c.last_update_date=datetime.now()   
+            c.save()
+            sendClusterReq(str(cluster.id))
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        cluster = self.get_object(pk)
+        if cluster.user_id != request.user:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        cluster.status=Cluster.STATUS_FORDELETE           
+        cluster.creation_date=datetime.now()
+        cluster.last_update_date=datetime.now()        
+        cluster.save()#update instead of insert
+        sendClusterReq(str(cluster.id))
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def sendClusterReq(rid):
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='clusterQueue')
+
+    channel.basic_publish(exchange='',
+                        routing_key='clusterQueue',
+                        body=rid)
+    print(" [x] Sent request for cluster " + rid)
+    connection.close()

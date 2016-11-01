@@ -27,10 +27,15 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name')
 
 
-class ClusterSerializer(serializers.HyperlinkedModelSerializer):
+class ClusterListSerializer(serializers.HyperlinkedModelSerializer):
 	user = serializers.ReadOnlyField(source='user_id.username')
-
-
 	class Meta:
 		model = Cluster
-		fields = ('cluster_name', 'requested_no_of_instance','user')
+		fields = ('id','cluster_name', 'requested_no_of_instance','user','status','no_of_instances')
+
+
+class ClusterSerializer(serializers.HyperlinkedModelSerializer):
+	#user = serializers.ReadOnlyField(source='user_id.username')
+	class Meta:
+		model = Cluster
+		fields = ('cluster_name', 'requested_no_of_instance')
