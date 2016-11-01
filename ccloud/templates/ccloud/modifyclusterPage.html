@@ -5,12 +5,12 @@
     <style></style>
   </head>
   <body>
-  <a href="/ccloud/userHome">Home</a>
+  <a href="/ccloud/user/Home">Home</a>
   <a href="/ccloud/logout">Logout</a>
   <strong><h2> <p> Cluster details {{cid}} </p></h2></strong>   
   {% if addflg %}
    <strong> {{message}}</strong>
-   <a href="/ccloud/clusterHome">Return to the homepage.</a><br />
+   <a href="/ccloud/user/cluster/home/">Return to the homepage.</a><br />
   {% else %}
   <strong> <p> Nodes in cluster {{cid}}</p> </strong>
   <table border=1>
@@ -25,7 +25,7 @@
     {% endfor %}        
     </table>
   <strong> <p> Services in each node in {{cid}}</p> </strong>   
-  <form id="addPage" action="/ccloud/service/add/" method="post">  
+  <form id="addPage" action="/ccloud/user/service/add/" method="post">  
   {% csrf_token %}
     <div>
     <input type="hidden" name="cors" value='s' />
@@ -33,7 +33,7 @@
     <input type="submit" name="Add" value="Add Service" />    
     </div>  
   </form>
-  <form id="modifyPage" action="/ccloud/service/modify/" method="post">  
+  <form id="modifyPage" action="/ccloud/user/service/modify/" method="post">  
   {% csrf_token %}  
   <table border=1>
     <tr><td>Select</td><td>Service ID</td><td>Service Name</td><td>Service GIT URL</td><td>Status</td></tr>
@@ -53,7 +53,7 @@
   </form>    
   {% if modorview %}
   <strong>  <p> No of nodes to be added </p> </strong> 
-  <form id="modifyclusterPage" action="/ccloud/modifyclusterPage/" method="post">
+  <form id="modifyclusterPage" action="/ccloud/user/cluster/modify/" method="post">
     {% csrf_token %}
     {{ form.as_p }}       
     <input type="hidden" name="cid" value={{cid}} />

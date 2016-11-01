@@ -105,7 +105,7 @@ def register(request):
             #output = subprocess.check_output(['./script/createUser.sh',str(user.username),str(password)])
             #print output
             auth_url='http://172.17.0.1:5000/v2.0'
-            auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
+            auth = v2.Password(username="admin", password="123456",tenant_name="admin", auth_url=auth_url)
             sess = session.Session(auth=auth)
             keystone = client.Client(session=sess)
             keystone.tenants.list() 
@@ -161,7 +161,7 @@ def user_login(request):
     			login(request,user)    			
     			request.session['username'] = username
     			request.session['tenant_name'] = "project_"+username
-    			return HttpResponseRedirect('/ccloud/userHome/')
+    			return HttpResponseRedirect('/ccloud/user/Home/')
     		else:
     			return HttpResponse("Your CCloud Account is disabled")
     	else:
@@ -373,6 +373,7 @@ def getaddclusterPage(request):
             message = 'Request sent for adding cluster!!'            
             context = {'message' : message}         
             addflg = True;    
+            print addflg
             user = User.objects.get(username=username)           
             cluster=Cluster(cluster_name=form.cleaned_data['clustername'],user_id=user,status=Cluster.STATUS_FORCREATE,no_of_instances=0,requested_no_of_instance=form.cleaned_data['noOfNodes'],creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
             cluster.save()

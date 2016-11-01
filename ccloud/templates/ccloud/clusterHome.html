@@ -5,16 +5,16 @@
     <style></style>
   </head>
   <body>  
-  <a href="/ccloud/userHome">Home</a>
+  <a href="/ccloud/user/Home">Home</a>
   <a href="/ccloud/logout">Logout</a>
   <p> Cluster List </p>    
-    <form id="addclusterPage" action="/ccloud/addclusterPage/" method="get">
+    <form id="addclusterPage" action="/ccloud/user/cluster/add/" method="get">
     {% csrf_token %}
     <div>
-    <a href="/ccloud/addclusterPage/">Add cluster</a><br />
+    <a href="/ccloud/user/cluster/add/">Add cluster</a><br />
     </div>
     </form>
-    <form id="delete" action="/ccloud/modifyclusterPage/" method="post">
+    <form id="delete" action="/ccloud/user/cluster/modify/" method="post">
     {% csrf_token %}
     <div>    
     {% if cluster.count == 0 %}

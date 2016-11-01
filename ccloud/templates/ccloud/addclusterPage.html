@@ -5,15 +5,15 @@
     <style></style>
   </head>
   <body>
-  <a href="/ccloud/userHome">Home</a>
+  <a href="/ccloud/user/Home">Home</a>
   <a href="/ccloud/logout">Logout</a>
   <p> Add cluster </p>
   {% if addflg %}
    <strong> {{ message }} </strong>
-   <a href="/ccloud/clusterHome">Return to the homepage.</a><br />
+   <a href="/ccloud/user/cluster/home/">Return to the homepage.</a><br />
   {% else %}
     <strong> {{ message }} </strong>
-    <form id="addclusterPage" action="/ccloud/addclusterPage/" method="post">
+    <form id="addclusterPage" action="/ccloud/user/cluster/add/" method="get">
         {% csrf_token %}
         {{ form.as_p }}    
         <input type="submit" name="Add" value="Add Cluster" /> 

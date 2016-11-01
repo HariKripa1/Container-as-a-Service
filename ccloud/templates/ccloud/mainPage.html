@@ -5,17 +5,17 @@
     <style></style>
   </head>
   <body>
-  <a href="/ccloud/userHome">Home</a>
+  <a href="/ccloud/user/Home">Home</a>
   <a href="/ccloud/logout">Logout</a>
   <p> Container List </p>    
-    <form id="addPage" action="/ccloud/service/add/" method="post">  
+    <form id="addPage" action="/ccloud/user/service/add/" method="post">  
   {% csrf_token %}
     <div>
     <input type="hidden" name="cors" value='c' />    
     <input type="submit" name="Add" value="Add Container" />    
     </div>  
   </form>
-    <form id="delete" action="/ccloud/modifyPage/" method="post">
+    <form id="delete" action="/ccloud/user/service/modify/" method="post">
     {% csrf_token %}
     <div>    
     {% if container.count == 0 %}
