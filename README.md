@@ -1,5 +1,3 @@
-
-
 Container as a Service - Portal to deploy and manage container
 * User friendly interface for developers.
 * Developers can concentrate on their application development and need not worry about deployment.
@@ -38,6 +36,7 @@ Install Django:
 * $ pip install virtualenv
 * $ pip install virtualenvwrapper
 * $ pip install Django
+* $ pip install djangorestframework
 
 Install RabbitMQ:
 
@@ -58,5 +57,3 @@ Open Application
 3. Run manage.py
       $ python manage.py runserver 7000
 4. Open application through browser (Application url: localhost/ccloud )
-
-
