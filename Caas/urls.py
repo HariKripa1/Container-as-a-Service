@@ -33,10 +33,12 @@ from ccloud_api import views
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
+#router.register(r'clusters',views)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^ccloud/',include('ccloud.urls')),
     url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^ccloud-api/clusters/$', views.ClusterList.as_view()),
 ]
