@@ -70,6 +70,7 @@ def create_cluster(c):
                 if j==0:
                     master='Y'
                     c.master_ip=ip
+                    c.master_name=name
                     c.save()
                 else:
                     master='N'

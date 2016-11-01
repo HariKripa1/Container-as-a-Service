@@ -15,14 +15,13 @@ class UserForm(forms.ModelForm):
 class AddPage(forms.Form):
     containername = forms.CharField(label='Container Name', max_length=500)
     giturl = forms.CharField(label='GIT Hub URL', max_length=500)
-    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False, required=False)
-    application = forms.ChoiceField(choices=Container.APPLICATION_CHOICES)
+    port = forms.CharField(label='Port', max_length=500)    
     
 class ModifyPage(forms.Form):    
     containername = forms.CharField(label='Container Name', max_length=500)
     giturl = forms.CharField(label='GIT Hub URL', max_length=500)
-    dockerfilereq = forms.BooleanField(label='Docker file required', initial=False, required=False)
-    application = forms.ChoiceField(choices=Container.APPLICATION_CHOICES)
+    port = forms.CharField(label='Port', max_length=500)
+    scale = forms.CharField(label='Scale', max_length=500)
 
 class AddClusterPage(forms.Form):
     clustername = forms.CharField(label='Cluster Name', max_length=500)

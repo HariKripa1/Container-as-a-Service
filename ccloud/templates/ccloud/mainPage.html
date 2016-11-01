@@ -5,14 +5,16 @@
     <style></style>
   </head>
   <body>
+  <a href="/ccloud/userHome">Home</a>
   <a href="/ccloud/logout">Logout</a>
   <p> Container List </p>    
-    <form id="addPage" action="/ccloud/addPage/" method="get">
-    {% csrf_token %}
+    <form id="addPage" action="/ccloud/service/add/" method="post">  
+  {% csrf_token %}
     <div>
-    <a href="/ccloud/addPage/">Add container</a><br />
-    </div>
-    </form>
+    <input type="hidden" name="cors" value='c' />    
+    <input type="submit" name="Add" value="Add Container" />    
+    </div>  
+  </form>
     <form id="delete" action="/ccloud/modifyPage/" method="post">
     {% csrf_token %}
     <div>    
@@ -32,7 +34,7 @@
         {% endfor %}        
         </table>
         <br/>
-        <input type="submit" name="Redeploy" id="Redeploy" value="Redeploy" />
+        <input type="submit" name="Modify" id="Modify" value="Scale" />
         <input type="submit" name="Delete" id="Delete" value="Delete" />
      {% endif %}   
     </div>

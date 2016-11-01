@@ -39,16 +39,24 @@ class Cluster(models.Model):
         (STATUS_SWARM_CREATED,'Docker swarm created'),
         (STATUS_SWARM_FAILED,'Docker swarm failed')
     )
+    ADMIN = 'Y'
+    USER = 'N'
+    LOOKUP_CHOICES = (
+        (ADMIN,'Admin'),
+        (USER,'User')
+    )
     cluster_name = models.CharField(max_length=200,unique=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     status=models.CharField(max_length=100,choices=STATUS_CHOICES)
     no_of_instances = models.IntegerField()
     requested_no_of_instance = models.IntegerField()
     master_ip = models.CharField(max_length=200)
+    master_name=models.CharField(max_length=200)
     token_id = models.CharField(max_length=500)
     creation_date = models.DateTimeField('date created')
     last_update_date = models.DateTimeField('date updated')
     created_by=models.CharField(max_length=100)
+    created_by_admin=models.CharField(max_length=1,choices=LOOKUP_CHOICES)
     def __str__(self):
         return self.cluster_name
 
@@ -121,6 +129,12 @@ class Container(models.Model):
         (LOOKUP_Y,'Yes'),
         (LOOKUP_N,'No')
     )
+    CONTAINER = 'C'
+    SERVICE = 'S'
+    CORS_CHOICES = (
+        (CONTAINER,'Container'),
+        (SERVICE,'Service')
+    )
     STATUS_FORCREATE = 'STATUS_FORCREATE'
     STATUS_FORMODIFY = 'STATUS_FORMODIFY'
     STATUS_FORDELETE = 'STATUS_FORDELETE'
@@ -153,6 +167,9 @@ class Container(models.Model):
     creation_date = models.DateTimeField('date created')
     last_update_date = models.DateTimeField('date updated')
     created_by=models.CharField(max_length=100)
+    container_or_service = models.CharField(max_length=100,choices=CORS_CHOICES)
+    port=models.CharField(max_length=100)
+    scale=models.CharField(max_length=100)
     def __str__(self):
         return self.container_name
 

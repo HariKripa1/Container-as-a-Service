@@ -49,7 +49,7 @@ def send(rid):
                         body=rid)
     print(" [x] Sent 'Hello World!'" + rid)
     connection.close()
-    return HttpResponseRedirect('/ccloud/thanks/')
+    
 
 def sendClusterReq(rid):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
@@ -62,7 +62,7 @@ def sendClusterReq(rid):
                         body=rid)
     print(" [x] Sent request for cluster " + rid)
     connection.close()
-    return HttpResponseRedirect('/ccloud/thanks/')
+    
 
 def index(request):
     return render(request,'ccloud/index.html')
@@ -117,7 +117,7 @@ def register(request):
             #output = subprocess.check_output(['./script/createUser.sh',str(user.username),str(password)])
             #print output
             auth_url='http://172.17.0.1:5000/v2.0'
-            auth = v2.Password(username="admin", password="123456",tenant_name="admin", auth_url=auth_url)
+            auth = v2.Password(username="admin", password="password",tenant_name="admin", auth_url=auth_url)
             sess = session.Session(auth=auth)
             keystone = client.Client(session=sess)
             keystone.tenants.list() 
@@ -209,39 +209,48 @@ def getMainform(request):
     return render(request, 'ccloud/mainPage.html', {'container': container } )
 
 @login_required
-def getAddPage(request):
+def getService(request):
     form = AddPage(request.POST)
     print('fasdsas');
     addflg = False;    
     print(request.session.get('username'))   
-    username=request.session.get('username')    
+    username=request.session.get('username') 
+    cid = ''
+    cors = ''
     if form.is_valid():
-            # add in db
-            print('addd page')
-            form.cleaned_data['giturl']            
-            message = "add request sent for "+form.cleaned_data['giturl']
-            context = {'message' : message}
-            addflg = True; 
-            try:
-                cid = request.POST['cid']
-            except KeyError:
-                cid = "1"
-            print 'clusterid'
+        # add in db
+        print('addd service')
+        form.cleaned_data['giturl']            
+        message = "add request sent for "+form.cleaned_data['giturl']
+        port=form.cleaned_data['port']
+        context = {'message' : message}
+        addflg = True; 
+        try:
+            cid = request.POST['cid']
+        except KeyError:
+            cl=Cluster.objects.get(created_by_admin='Y')[0]
+            cid = str(cl.id)
+            print 'admin cluster'
             print cid
-            try:
-                cors = request.POST['cors']
-            except KeyError:
-                cors = "c"
-            cluster = Cluster.objects.get(id=cid)
-            user = User.objects.get(username=username)
-            container=Container(cluster_id=cluster,container_name=form.cleaned_data['containername'],git_url=form.cleaned_data['giturl'],user_id=user,docker_file=form.cleaned_data['dockerfilereq'],application_name=form.cleaned_data['application'],status=Container.STATUS_FORCREATE,container_url='',devstack_container_id='',creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
-            container.save()
-            crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORCREATE, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
-            crreq.save()
-            if cors=="c":
-                send(str(crreq.id))                
-            return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg,'cid':cid,'cors':cors})
-    else:
+        print 'clusterid'
+        print cid
+        try:
+            cors = request.POST['cors']
+        except KeyError:
+            cors = "c"
+        cluster = Cluster.objects.get(id=cid)
+        user = User.objects.get(username=username)
+        if cors=="c":
+            containerorservice=Container.CONTAINER
+        else:
+            containerorservice=Container.SERVICE
+        container=Container(cluster_id=cluster,container_name=form.cleaned_data['containername'],git_url=form.cleaned_data['giturl'],user_id=user,docker_file='Y',application_name='',status=Container.STATUS_FORCREATE,container_url='',devstack_container_id='',creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username,container_or_service=containerorservice,port=port)
+        container.save()
+        crreq=RequestQueue(container_id = container,status = RequestQueue.STATUS_FORCREATE, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+        crreq.save()
+        send(str(crreq.id))                
+        return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg,'cid':cid,'cors':cors})       
+    elif "Add" in request.POST:     
         print('add page 2')
         try:
             cid = request.POST['cid']
@@ -253,22 +262,37 @@ def getAddPage(request):
             cors = "c"
         print 'clusterid'
         print cid
-        form = AddPage()            
+        form = AddPage()   
+        return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg,'cid':cid,'cors':cors})        
     return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg,'cid':cid,'cors':cors})
+    
+    
+    
 
 @login_required
-def getModifyPage(request):    
+def modifyService(request):    
     form = ModifyPage(request.POST)
     modifyflg = False;
     c_id = '';
     delmodflg = '';
     username=request.session.get('username')    
-    if "Redeploy" in request.POST:         
-        c_id = request.POST['cid']        
+    if "Modify" in request.POST:                 
+        c_id = request.POST.get('cid')
+        print 'mod'
+        print c_id
         form = ModifyPage()            
-        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg})
+        try:
+            cors = request.POST.get('cors')
+            if cors == None:
+                cors="c"
+            print cors
+        except KeyError:
+            cors = "c"
+        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'cors':cors})
     elif "Delete" in request.POST:
-        c_id = request.POST['cid']
+        c_id = request.POST.get('cid')
+        print 'del'
+        print c_id
         message = "Deletion request sent for "+c_id
         modifyflg = True;
         user = User.objects.get(username=username)   
@@ -282,7 +306,15 @@ def getModifyPage(request):
         crreq.save()
         send(str(crreq.id))
         delmodflg = 'Delete'
-        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
+        try:
+            cors = request.POST.get('cors')
+            if cors == None:
+                cors="c"
+            print cors
+        except KeyError:
+            cors = "c"
+            print cors
+        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg,'cors':cors})
     elif form.is_valid():
         # add in db            
         form.cleaned_data['giturl']   
@@ -294,8 +326,10 @@ def getModifyPage(request):
         container.container_name=form.cleaned_data['containername']
         container.git_url=form.cleaned_data['giturl']
         container.user_id=user
-        container.docker_file=form.cleaned_data['dockerfilereq']
-        container.application_name=form.cleaned_data['application']
+        container.docker_file='Y'
+        container.application_name=''
+        container.port=form.cleaned_data['port']
+        container.scale=form.cleaned_data['scale']
         container.status=Container.STATUS_FORMODIFY        
         container.creation_date=datetime.now()
         container.last_update_date=datetime.now()        
@@ -303,8 +337,15 @@ def getModifyPage(request):
         crreq=RequestQueue(container_id = container,status = container.status, creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
         crreq.save()
         send(str(crreq.id))
+        try:
+            cors = request.POST.get('cors')
+            if cors == None:
+                cors="c"
+            print cors
+        except KeyError:
+            cors = "c"
         delmodflg = 'Modify'
-        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg})
+        return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' :delmodflg,'cors':cors})
     else:
         message = " error "
         context = {'message' : message, 'modifyflg' : modifyflg}
