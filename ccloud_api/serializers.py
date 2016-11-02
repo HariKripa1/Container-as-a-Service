@@ -12,7 +12,7 @@ if SYS_PATH not in sys.path:
     sys.path.append(SYS_PATH)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'Caas.settings'
 application = get_wsgi_application()
-from ccloud.models import Cluster
+from ccloud.models import Cluster, Container
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -26,12 +26,19 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ('url', 'name')
 
+class ContainerSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = Container
+		fields = ('id','container_name', 'git_url')
+
 
 class ClusterListSerializer(serializers.HyperlinkedModelSerializer):
 	user = serializers.ReadOnlyField(source='user_id.username')
+	#tracks = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='track-detail')
+	container = ContainerSerializer(many=True, read_only=True)
 	class Meta:
 		model = Cluster
-		fields = ('id','cluster_name', 'requested_no_of_instance','user','status','no_of_instances')
+		fields = ('id','cluster_name', 'requested_no_of_instance','user','status','no_of_instances','container')
 
 
 class ClusterSerializer(serializers.HyperlinkedModelSerializer):
@@ -39,3 +46,6 @@ class ClusterSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Cluster
 		fields = ('cluster_name', 'requested_no_of_instance')
+
+
+
