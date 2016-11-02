@@ -525,4 +525,4 @@ def meters(request):
 
 
     #output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
-    return render(request, 'ccloud/meters.html', {'cpu_util':cpu_util,'memory_usage':memory_usage})
+    return render(request, 'ccloud/meters.html', {'cpu_util':cpu_util,'memory_usage':memory_usage,'clusters':clusters})

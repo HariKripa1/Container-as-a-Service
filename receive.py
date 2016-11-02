@@ -122,7 +122,7 @@ def callback(ch, method, properties, body):
     else:
         if c.status == Container.STATUS_FORCREATE:
             output = subprocess.check_output(['./script/CreateService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name),str(c.user_id.username),str(c.git_url),str(c.port)])
-            print outputs
+            print output
             regex = re.compile('.*PublishedPort:.*')
             j = 0
             nodes=output.split('\n')  

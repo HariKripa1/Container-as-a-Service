@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -6,10 +5,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
         <link rel="stylesheet" type="text/css" href="{% static 'ccloud/login.css' %}" />
-        <script src="{% static 'ccloud/login.js' %}"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        
         
         <!-- Is anyone getting tired of repeatedly entering the header over and over?? -->
         <title>CCloud</title>
@@ -58,25 +55,21 @@
                                     
                                 </form>
                                 <form id="register-form" action="/ccloud/register" method="post" role="form" style="display: none;">
-                                    <div class="form-group">
-                                        <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-sm-6 col-sm-offset-3">
-                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {% if registered %}
+                                        <strong>thank you for registering!</strong>
+                                        <a href="/ccloud/">Return to the homepage.</a><br />
+                                    {% else %}
+                                    <strong>register here!</strong><br />
+
+                                    <form id="user_form" method="post" action="/ccloud/register"
+                                            enctype="multipart/form-data">
+
+                                        {% csrf_token %}
+
+                                        {{ user_form.as_p }}
+                                        <input type="submit" name="submit" value="Register" />
+                                    </form>
+                                    {% endif %}
                                 </form>
                             </div>
                         </div>
@@ -85,5 +78,33 @@
             </div>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+    <script src="{% static 'ccloud/login.js' %}"></script>
     </body>
 </html>
+
+
+<!--
+  {% if registered %}
+            <strong>thank you for registering!</strong>
+        <a href="/ccloud/">Return to the homepage.</a><br />
+        {% else %}
+        <strong>register here!</strong><br />
+
+        <form id="user_form" method="post" action="/ccloud/register"
+                enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            Display each form. The as_p method wraps each element in a paragraph
+                 (<p>) element. This ensures each element appears on a new line,
+                 making everything look neater.
+            {{ user_form.as_p }}
+
+            Provide a button to click to submit the form.
+            <input type="submit" name="submit" value="Register" />
+        </form>
+        {% endif %}
+-->
