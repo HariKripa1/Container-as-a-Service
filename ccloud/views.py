@@ -148,6 +148,60 @@ def register(request):
             'ccloud/register.html',
             {'user_form': user_form, 'registered': registered})
 def user_login(request):
+    registered = False
+
+ 
+    if request.method == 'POST':
+        
+        user_form = UserForm(data=request.POST)
+
+       
+        if user_form.is_valid():
+            
+            user = user_form.save()
+            password = user.password
+            
+            user.set_password(user.password)
+            user.save()
+            registered = True
+            print str(user.username)
+            print str(password)
+            #output = subprocess.check_output(['./script/createUser.sh',str(user.username),str(password)])
+            #print output
+            auth_url='http://172.17.0.1:5000/v2.0'
+            auth = v2.Password(username="admin", password="123456",tenant_name="admin", auth_url=auth_url)
+            sess = session.Session(auth=auth)
+            keystone = client.Client(session=sess)
+            keystone.tenants.list() 
+            username=user.username
+            password=password
+            tenant_name="project_"+username
+            keystone.tenants.create(tenant_name=tenant_name,description="Default Tenant", enabled=True)
+            tenants = keystone.tenants.list()
+            my_tenant = [x for x in tenants if x.name==tenant_name][0]
+            my_user = keystone.users.create(name=username,password=password,tenant_id=my_tenant.id)
+            roles = keystone.roles.list()
+            try:
+                my_role = [x for x in roles if x.name=='user'][0]
+            except:    
+                my_role = keystone.roles.create('user')
+            if my_role is None:
+                my_role = keystone.roles.create('user')
+            print my_role    
+            keystone.roles.add_user_role(my_user, my_role, my_tenant)
+            service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
+            keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://172.17.0.1:8774/v2/%(tenant_id)s", adminurl="http://172.17.0.1:8774/v2/%(tenant_id)s", internalurl="http://172.17.0.1:8774/v2/%(tenant_id)s")
+            openstackuser=Openstack_User(user_id=user,username=str(username),password=str(password),projectname="project_"+str(username),role=Openstack_User.USER)
+            openstackuser.save()
+        # Invalid form or forms -  or something else?
+        # Print problems to the terminal.
+        # They'll also be shown to the user.
+        else:
+            print user_form.errors
+    # Not a HTTP POST, so we render our form using two ModelForm instances.
+    # These forms will be blank, ready for user input.
+    else:
+        user_form = UserForm()
     if request.method=='POST':
     	username=request.POST['username']
     	password=request.POST['password']
@@ -173,7 +227,7 @@ def user_login(request):
     	   print "Invalid login details: {0}, {1}".format(username, password)
            return HttpResponse("Invalid login details supplied.")
     else:
-        return render(request,'ccloud/login.html',{})
+        return render(request,'ccloud/login.html',{'user_form': user_form, 'registered': registered})
 
 
 @login_required
