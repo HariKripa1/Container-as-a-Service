@@ -198,3 +198,10 @@ class RequestQueue(models.Model):
     def __str__(self):
         return str(self.container_id)
 
+class Price(models.Model):
+    
+    instance_id = models.ForeignKey(Cluster, to_field=openstack_node_id, db_column=openstack_node_id, on_delete=models.CASCADE)
+    price=models.FloatField()
+    def __str__(self):
+        return str(self.container_id)
+

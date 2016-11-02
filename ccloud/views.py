@@ -555,7 +555,9 @@ def meters(request):
     cclient = ceilometerclient.client.get_client(2, os_username=user.username, os_password=user.password, os_tenant_name=user.projectname, os_auth_url='http://172.17.0.1:5000/v2.0')
 
     clusters =  Cluster.objects.filter(user_id=request.user).exclude(status = Cluster.STATUS_DELETED) 
+    total_price = []
     for cluster in clusters:
+        total=0.0
         nodes = Node.objects.filter(cluster_id=cluster.id)
         for node in nodes:
             query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='cpu_util')]
@@ -567,6 +569,7 @@ def meters(request):
                 list_temp.append(each.resource_id)
                 list_temp.append(each.volume)
                 list_temp.append(cluster.cluster_name)
+
                 cpu_util.append(list_temp)
                 print node.openstack_node_id
             query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='memory.usage')]
@@ -577,8 +580,23 @@ def meters(request):
                 list_temp.append(each.resource_id)
                 list_temp.append(each.volume)
                 list_temp.append(cluster.cluster_name)
+                price = float(each.volume)*10;
+                if(Price.objects.get(each.resource_id)):
+                    p = Price.objects.get(each.resource_id)
+                    if(p.price<price):
+                        p.price=price
+                        p.save()
+                else:
+                    p = Price(instance_id=each.resource_id,price=price)
+                    p.save()
+
+
+                list_temp.append(p.price)
                 memory_usage.append(list_temp)
+            p = Price.objects.get(each.resource_id)
+            total += p.price
+        total_price.append(total)
 
 
     #output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
-    return render(request, 'ccloud/meters.html', {'cpu_util':cpu_util,'memory_usage':memory_usage,'clusters':clusters})
+    return render(request, 'ccloud/meters.html', {'cpu_util':cpu_util,'memory_usage':memory_usage,'clusters':clusters},'total_price':total_price)
