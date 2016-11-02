@@ -13,7 +13,7 @@
    <a href="/ccloud/user/cluster/home/">Return to the homepage.</a><br />
   {% else %}
     <strong> {{ message }} </strong>
-    <form id="addclusterPage" action="/ccloud/user/cluster/add/" method="get">
+    <form id="addclusterPage" action="/ccloud/user/cluster/add/" method="post">
         {% csrf_token %}
         {{ form.as_p }}    
         <input type="submit" name="Add" value="Add Cluster" /> 
