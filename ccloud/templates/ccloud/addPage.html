@@ -1,4 +1,36 @@
-<html>
+{% extends "ccloud/base.html" %}
+
+{% block title %}
+      <title>Container Creation</title>
+{% endblock %}
+
+{% block css %}
+            {% load static %}
+          <link rel="stylesheet" type="text/css" href="{% static 'ccloud/mainPage.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container vertical-center" align="center">
+<div class="card col-md-4 col-offset-1">
+<div class="card-header"> Container Details </div>
+<div class="card-block">
+ {% if addflg %}
+   <strong> {{ message }}} </strong>
+   <a href="/ccloud/mainPage">Return to the homepage.</a><br />
+  {% else %}
+  <form id="addPage" action="/ccloud/addPage/" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}    
+    <input type="submit" name="Add" value="Add Container" /> 
+  </form>
+  {% endif %}
+  </div>
+  </div>
+  </div>
+
+{% endblock %}
+
+<!--<html>
   <head>
     <title></title>
     <meta content="">
@@ -27,3 +59,4 @@
   {% endif %}
   </body>
 </html>
+-->

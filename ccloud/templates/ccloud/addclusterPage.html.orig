@@ -16,10 +16,10 @@
 <div class="card-block">
  {% if addflg %}
    <strong> {{ message }} </strong>
-   <a href="/ccloud/user/cluster/home/">Return to the homepage.</a><br />
+   <a href="/ccloud/mainPage">Return to the homepage.</a><br />
   {% else %}
-   <form id="addclusterPage" action="/ccloud/user/cluster/add/" method="post">    
-	{% csrf_token %}
+  <form id="addPage" action="/ccloud/addclusterPage/" method="post">
+    {% csrf_token %}
     {{ form.as_p }}    
     <input type="submit" name="Add" value="Add Cluster" /> 
   </form>
@@ -53,4 +53,7 @@
   {% endif %}
   </body>
 </html>
+<<<<<<< HEAD
+=======
 -->
+>>>>>>> cssbranch
