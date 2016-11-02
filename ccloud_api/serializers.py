@@ -27,18 +27,20 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name')
 
 class ContainerSerializer(serializers.HyperlinkedModelSerializer):
+	user = serializers.ReadOnlyField(source='user_id.username')
+	#cluster_id = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='cluster-detail')
 	class Meta:
 		model = Container
-		fields = ('id','container_name', 'git_url')
+		fields = ('id','container_name', 'git_url','user')
 
 
 class ClusterListSerializer(serializers.HyperlinkedModelSerializer):
 	user = serializers.ReadOnlyField(source='user_id.username')
-	#tracks = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='track-detail')
-	container = ContainerSerializer(many=True, read_only=True)
+	#container = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='container-detail')
+	containers = ContainerSerializer(many=True, read_only=True)
 	class Meta:
 		model = Cluster
-		fields = ('id','cluster_name', 'requested_no_of_instance','user','status','no_of_instances','container')
+		fields = ('id','cluster_name', 'requested_no_of_instance','user','status','no_of_instances','containers')
 
 
 class ClusterSerializer(serializers.HyperlinkedModelSerializer):
@@ -46,6 +48,8 @@ class ClusterSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Cluster
 		fields = ('cluster_name', 'requested_no_of_instance')
+
+
 
 
 

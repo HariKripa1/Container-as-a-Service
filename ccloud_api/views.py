@@ -20,7 +20,7 @@ if SYS_PATH not in sys.path:
     sys.path.append(SYS_PATH)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'Caas.settings'
 application = get_wsgi_application()
-from ccloud.models import Cluster
+from ccloud.models import Cluster, Container
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -114,6 +114,17 @@ class ClusterDetail(APIView):
         cluster.save()#update instead of insert
         sendClusterReq(str(cluster.id))
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ContainerList(APIView):
+    """
+     List all clusters, or create a new cluster.
+    """
+    permission_classes = (IsOwnerOrReadOnly,permissions.IsAuthenticated,)
+    def get(self, request, format=None):
+        container=Container.objects.filter(user_id=request.user).exclude(status = Cluster.STATUS_DELETED)
+        #clusters = Cluster.objects.all()
+        serializer = ContainerSerializer(container, many=True,context={'request': request},partial=True)
+        return Response(serializer.data)
 
 class ContainerDetail(APIView):
     """
