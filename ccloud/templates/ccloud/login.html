@@ -65,8 +65,9 @@
                                             enctype="multipart/form-data">
 
                                         {% csrf_token %}
-
+                                        <div class="form-group">
                                         {{ user_form.as_p }}
+                                        </div>
                                         <input type="submit" name="submit" value="Register" />
                                     </form>
                                     {% endif %}
