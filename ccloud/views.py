@@ -490,3 +490,37 @@ def getmodifyclusterPage(request):
             sendClusterReq(str(cluster.id))
             return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message,'node': node})
     return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
+
+    @login_required
+def meters():
+    #source openrc admin admin
+    cpu_util = [[] for _ in range(20)]
+    memory_usage = [[] for _ in range(20)]
+    user = Openstack_User.objects.get(username=username) 
+    cclient = ceilometerclient.client.get_client(2, os_username=user.username, os_password=user.password, os_tenant_name=user.projectname, os_auth_url='http://192.168.1.5:5000/v2.0')
+
+    clusters = Cluster.objects.get(user_id=user.id)
+    for cluster in clusters:
+        node = Nodes.objects.get(cluster_id=cluster.id)
+        query = [dict(field='resource_id', op='eq', value=node.openstack_instance_id), dict(field='meter',op='eq',value='cpu_util')]
+        cpu_util_sample = new_samples.list(query)
+        list_temp = []
+        for each in cpu_util_sample:
+            list_temp.append(each.timestamp)
+            list_temp.append(each.resource_id)
+            list_temp.append(each.volume)
+            list_temp.append(cluster.cluster_name)
+            arr.append(list_temp)
+        query = [dict(field='resource_id', op='eq', value=node.openstack_instance_id), dict(field='meter',op='eq',value='memory.usage')]
+        memory_usage_sample = new_samples.list(query)
+        list_temp = []
+        for each in memory_usage_sample:
+            list_temp.append(each.timestamp)
+            list_temp.append(each.resource_id)
+            list_temp.append(each.volume)
+            list_temp.append(cluster.cluster_name)
+            arr.append(list_temp)
+
+
+    #output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
+    return render(request, 'ccloud/meters.html', {'cpu_util':cpu_util,'memory_usage':memory_usage})
