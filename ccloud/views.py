@@ -305,18 +305,18 @@ def modifyService(request):
         return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg,'cors':cors})
     elif form.is_valid():
         # add in db            
-        form.cleaned_data['giturl']   
+        #form.cleaned_data['giturl']   
         c_id = request.POST.get('cid', None)
-        message = "modification request sent for "+form.cleaned_data['giturl']                     
+        #message = "modification request sent for "+form.cleaned_data['giturl']                     
         modifyflg = True;
         user = User.objects.get(username=username)   
         container = Container.objects.get(id=c_id)
-        container.container_name=form.cleaned_data['containername']
-        container.git_url=form.cleaned_data['giturl']
-        container.user_id=user
-        container.docker_file='Y'
-        container.application_name=''
-        container.port=form.cleaned_data['port']
+        #container.container_name=form.cleaned_data['containername']
+        #container.git_url=form.cleaned_data['giturl']
+        #container.user_id=user
+        #container.docker_file='Y'
+        #container.application_name=''
+        #container.port=form.cleaned_data['port']
         container.scale=form.cleaned_data['scale']
         container.status=Container.STATUS_FORMODIFY        
         container.creation_date=datetime.now()

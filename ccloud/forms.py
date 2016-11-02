@@ -18,9 +18,6 @@ class AddPage(forms.Form):
     port = forms.CharField(label='Port', max_length=500)    
     
 class ModifyPage(forms.Form):    
-    containername = forms.CharField(label='Container Name', max_length=500)
-    giturl = forms.CharField(label='GIT Hub URL', max_length=500)
-    port = forms.CharField(label='Port', max_length=500)
     scale = forms.CharField(label='Scale', max_length=500)
 
 class AddClusterPage(forms.Form):
