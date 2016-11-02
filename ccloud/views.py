@@ -502,25 +502,26 @@ def meters(request):
 
     clusters =  Cluster.objects.filter(user_id=request.user).exclude(status = Cluster.STATUS_DELETED) 
     for cluster in clusters:
-        node = Node.objects.filter(cluster_id=cluster.id)
-        query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='cpu_util')]
-        cpu_util_sample = new_samples.list(query)
-        list_temp = []
-        for each in cpu_util_sample:
-            list_temp.append(each.timestamp)
-            list_temp.append(each.resource_id)
-            list_temp.append(each.volume)
-            list_temp.append(cluster.cluster_name)
-            cpu_util.append(list_temp)
-        query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='memory.usage')]
-        memory_usage_sample = new_samples.list(query)
-        list_temp = []
-        for each in memory_usage_sample:
-            list_temp.append(each.timestamp)
-            list_temp.append(each.resource_id)
-            list_temp.append(each.volume)
-            list_temp.append(cluster.cluster_name)
-            memory_usage.append(list_temp)
+        nodes = Node.objects.filter(cluster_id=cluster.id)
+        for node in nodes:
+            query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='cpu_util')]
+            cpu_util_sample = new_samples.list(query)
+            list_temp = []
+            for each in cpu_util_sample:
+                list_temp.append(each.timestamp)
+                list_temp.append(each.resource_id)
+                list_temp.append(each.volume)
+                list_temp.append(cluster.cluster_name)
+                cpu_util.append(list_temp)
+            query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='memory.usage')]
+            memory_usage_sample = new_samples.list(query)
+            list_temp = []
+            for each in memory_usage_sample:
+                list_temp.append(each.timestamp)
+                list_temp.append(each.resource_id)
+                list_temp.append(each.volume)
+                list_temp.append(cluster.cluster_name)
+                memory_usage.append(list_temp)
 
 
     #output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
