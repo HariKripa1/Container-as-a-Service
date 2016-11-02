@@ -26,7 +26,7 @@
     {% if user.is_superuser %}
     
     <table border=1>
-        <tr><td>Select</td><td>Cluster Name</td><td>Cluster Status</td><td>Number of instances</td></tr>
+        <tr><td>Select</td><td>User Name</td><td>Cluster Name</td><td>Cluster Status</td><td>Number of instances</td></tr>
         {% for c in cluster %}
             <tr> 
                 <td> <input type="radio" name="cid" value="{{ c.id }}"></td>                

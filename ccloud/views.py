@@ -23,10 +23,10 @@ from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
 from datetime import datetime
-#from keystoneauth1.identity import v2
-#from keystoneauth1 import session
-#from keystoneclient.v2_0 import client
-#import ceilometerclient.client
+from keystoneauth1.identity import v2
+from keystoneauth1 import session
+from keystoneclient.v2_0 import client
+import ceilometerclient.client
 import pika
 import sys
 import os
