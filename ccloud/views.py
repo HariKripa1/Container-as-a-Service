@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
@@ -10,8 +11,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .forms import NameForm
 from .forms import AddPage
+from .forms import AdminAddPage
 from .forms import ModifyPage
 from .forms import AddClusterPage
+from .forms import AdminAddClusterPage
 from .forms import ModifyClusterPage
 from .models import Cluster
 from .models import Node
@@ -127,7 +130,7 @@ def register(request):
             keystone.roles.add_user_role(my_user, my_role, my_tenant)
             service = keystone.services.create(name="nova", service_type="compute", description="Nova Compute Service")
             keystone.endpoints.create(region="RegionOne", service_id=service.id, publicurl="http://172.17.0.1:8774/v2/%(tenant_id)s", adminurl="http://172.17.0.1:8774/v2/%(tenant_id)s", internalurl="http://172.17.0.1:8774/v2/%(tenant_id)s")
-            openstackuser=Openstack_User(user_id=user,username=str(username),password=str(password),projectname="project_"+str(username),role="user")
+            openstackuser=Openstack_User(user_id=user,username=str(username),password=str(password),projectname="project_"+str(username),role=Openstack_User.USER)
             openstackuser.save()
         # Invalid form or forms -  or something else?
         # Print problems to the terminal.
@@ -158,10 +161,11 @@ def user_login(request):
             return HttpResponse("Invalid login details supplied.")
     	if user:
     		if user.is_active:
-    			login(request,user)    			
+    			login(request,user)    
+    			openstackuser = Openstack_User.objects.get(user_id=user.id)
     			request.session['username'] = username
-    			request.session['tenant_name'] = "project_"+username
-    			return HttpResponseRedirect('/ccloud/user/Home/')
+                        request.session['tenant_name'] = "project_"+username
+                        return HttpResponseRedirect('/ccloud/user/Home/')
     		else:
     			return HttpResponse("Your CCloud Account is disabled")
     	else:
@@ -198,13 +202,20 @@ def getMainform(request):
 
 @login_required
 def getService(request):
-    form = AddPage(request.POST)
+    try:
+        cors = request.POST['cors']
+    except KeyError:
+        cors = "c"
+    username=request.session.get('username') 
+    user = User.objects.get(username=username)
+    if user.is_superuser:
+        form = AdminAddPage(request.POST)        
+    else:
+        form = AddPage(request.POST) 
     print('fasdsas');
     addflg = False;    
-    print(request.session.get('username'))   
-    username=request.session.get('username') 
-    cid = ''
-    cors = ''
+    print(request.session.get('username'))       
+    cid = ''    
     if form.is_valid():
         # add in db
         print('addd service')
@@ -227,7 +238,10 @@ def getService(request):
         except KeyError:
             cors = "c"
         cluster = Cluster.objects.get(id=cid)
-        user = User.objects.get(username=username)
+        if user.is_superuser:
+            user = form.cleaned_data['user']            
+        else:
+            user = User.objects.get(username=username)
         if cors=="c":
             containerorservice=Container.CONTAINER
         else:
@@ -249,8 +263,11 @@ def getService(request):
         except KeyError:
             cors = "c"
         print 'clusterid'
-        print cid
-        form = AddPage()   
+        print cid        
+        if user.is_superuser:
+            form = AdminAddPage()        
+        else:
+            form = AddPage()    
         return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg,'cid':cid,'cors':cors})        
     return render(request, 'ccloud/addPage.html', {'form': form,'addflg' : addflg,'cid':cid,'cors':cors})
     
@@ -304,6 +321,7 @@ def modifyService(request):
             print cors
         return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg,'cors':cors})
     elif form.is_valid():
+
         # add in db            
         #form.cleaned_data['giturl']   
         c_id = request.POST.get('cid', None)
@@ -317,6 +335,14 @@ def modifyService(request):
         #container.docker_file='Y'
         #container.application_name=''
         #container.port=form.cleaned_data['port']
+
+        c_id = request.POST.get('cid', None)
+        print c_id
+        message = "modification request sent for "
+        modifyflg = True;
+        user = User.objects.get(username=username)   
+        container = Container.objects.get(id=c_id)
+>>>>>>> fdfd7b0041cc967eff22bb476dad021597ca3964
         container.scale=form.cleaned_data['scale']
         container.status=Container.STATUS_FORMODIFY        
         container.creation_date=datetime.now()
@@ -343,45 +369,67 @@ def modifyService(request):
 def getUserHome(request):
     message = "Successfully submitted"
     context = {'message' : message}
+    flg='U'
     return render(request, 'ccloud/userHome.html', context)
+
+@login_required
+def getAdminHome(request):
+    message = "Successfully submitted"
+    context = {'message' : message}        
+    username=request.session.get('username')
+    openstackusers = Openstack_User.objects.filter(role=Openstack_User.USER)
+    return render(request, 'ccloud/userHome.html', {'users':openstackusers,'username':username})
 
 @login_required
 def getClusterHome(request):        
     username=request.session.get('username')
     user = User.objects.get(username=username)
-    cluster = Cluster.objects.filter(user_id=user).exclude(status = Cluster.STATUS_DELETED)#change to cluster once model is created
-    print(request.session.get('username'))
-    #return render(request, 'ccloud/mainPage.html', {'list': zip(containerId,containerNames)} )
-    return render(request, 'ccloud/clusterHome.html', {'cluster': cluster } )
+    print user.username
+    print 'dmin'
+    print user.is_superuser
+    if user.is_superuser:
+        cluster = Cluster.objects.filter().exclude(status = Cluster.STATUS_DELETED)        
+    else:
+        cluster = Cluster.objects.filter(user_id=user).exclude(status = Cluster.STATUS_DELETED)#change to cluster once model is created
+    print(request.session.get('username'))    
+    return render(request, 'ccloud/clusterHome.html', {'cluster': cluster,'user':user } )
 
 @login_required
 def getaddclusterPage(request):
-    form = AddClusterPage(request.POST)
+    username=request.session.get('username')
+    user = User.objects.get(username=username)
+    if user.is_superuser:
+        form = AdminAddClusterPage(request.POST)        
+    else:
+        form = AddClusterPage(request.POST)    
     print('fasdsas');
     addflg = False;  
     message = ''
-    if form.is_valid():
-            # add in db
+    if form.is_valid():            
             print('addd cluster')
             form.cleaned_data['clustername']            
             message = "add request sent for "+form.cleaned_data['clustername']
             clustername = form.cleaned_data['clustername']
-            username=request.session.get('username')            
-            if Cluster.objects.filter(cluster_name=clustername).exists():
-                message = 'Cluster name already in use'
-                return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg,'message':message})
+            username=request.session.get('username')                        
             message = 'Request sent for adding cluster!!'            
             context = {'message' : message}         
             addflg = True;    
             print addflg
-            user = User.objects.get(username=username)           
+            if user.is_superuser:
+                user = form.cleaned_data['user']            
+            else:
+                user = User.objects.get(username=username)
+            print user
             cluster=Cluster(cluster_name=form.cleaned_data['clustername'],user_id=user,status=Cluster.STATUS_FORCREATE,no_of_instances=0,requested_no_of_instance=form.cleaned_data['noOfNodes'],creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
             cluster.save()
             sendClusterReq(str(cluster.id))
             return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg,'message':message})
     else:
         print('add page 2')
-        form = AddClusterPage()                
+        if user.is_superuser:
+            form = AdminAddClusterPage()        
+        else:
+            form = AddClusterPage()               
     return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg,'message':message})
 
 
@@ -415,9 +463,8 @@ def getmodifyclusterPage(request):
         print(cid)        
         addflg = True; 
         message = "Delete request sent for "+cid
-        cluster = Cluster.objects.get(id=cid)        
-        cluster.user_id=user        
-        cluster.status=Container.STATUS_FORDELETE           
+        cluster = Cluster.objects.get(id=cid)                      
+        cluster.status=Cluster.STATUS_FORDELETE           
         cluster.creation_date=datetime.now()
         cluster.last_update_date=datetime.now()        
         cluster.save()#update instead of insert
@@ -434,9 +481,8 @@ def getmodifyclusterPage(request):
             context = {'message' : cid}
             addflg = True; 
             user = User.objects.get(username=username)    
-            cluster= Cluster.objects.get(id=cid)            
-            cluster.user_id=user       
-            cluster.status=Container.STATUS_FORMODIFY        
+            cluster= Cluster.objects.get(id=cid)                             
+            cluster.status=Cluster.STATUS_FORMODIFY        
             cluster.requested_no_of_instance = form.cleaned_data['noOfNodes']        
             cluster.creation_date=datetime.now()
             cluster.last_update_date=datetime.now()        

@@ -45,7 +45,7 @@ class Cluster(models.Model):
         (ADMIN,'Admin'),
         (USER,'User')
     )
-    cluster_name = models.CharField(max_length=200,unique=True)
+    cluster_name = models.CharField(max_length=200)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     status=models.CharField(max_length=100,choices=STATUS_CHOICES)
     no_of_instances = models.IntegerField()
