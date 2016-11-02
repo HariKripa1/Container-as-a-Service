@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'^user/cluster/add/$', views.getaddclusterPage, name='addclusterPage'),
     url(r'^user/cluster/modify/$', views.getmodifyclusterPage, name='modifyclusterPage'),
     url(r'^user/service/add/$', views.getService, name='getService'),
-    url(r'^user/service/modify/$', views.modifyService, name='modifyService'),     
+    url(r'^user/service/modify/$', views.modifyService, name='modifyService'),
+    url(r'^user/meter/$', views.meters, name='meters'),     
 ]

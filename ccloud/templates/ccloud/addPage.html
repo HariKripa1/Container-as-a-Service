@@ -16,11 +16,13 @@
 <div class="card-block">
  {% if addflg %}
    <strong> {{ message }}} </strong>
-   <a href="/ccloud/mainPage">Return to the homepage.</a><br />
+   <a href="/ccloud/user/cluster/home/">Return to the homepage.</a><br />
   {% else %}
-  <form id="addPage" action="/ccloud/addPage/" method="post">
+  <form id="addPage" action="/ccloud/user/service/add/" method="post">
     {% csrf_token %}
-    {{ form.as_p }}    
+    {{ form.as_p }}
+    <input type="hidden" name="cors" value={{cors}} />
+    <input type="hidden" name="cid" value={{cid}} />    
     <input type="submit" name="Add" value="Add Container" /> 
   </form>
   {% endif %}

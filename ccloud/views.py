@@ -493,17 +493,17 @@ def getmodifyclusterPage(request):
     return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
 
 @login_required
-def meters():
+def meters(request):
     #source openrc admin admin
     cpu_util = [[] for _ in range(20)]
     memory_usage = [[] for _ in range(20)]
-    user = Openstack_User.objects.get(username=username) 
-    cclient = ceilometerclient.client.get_client(2, os_username=user.username, os_password=user.password, os_tenant_name=user.projectname, os_auth_url='http://192.168.1.5:5000/v2.0')
+    user = Openstack_User.objects.get(user_id=request.user) 
+    cclient = ceilometerclient.client.get_client(2, os_username=user.username, os_password=user.password, os_tenant_name=user.projectname, os_auth_url='http://172.17.0.1:5000/v2.0')
 
-    clusters = Cluster.objects.get(user_id=user.id)
+    clusters =  Cluster.objects.filter(user_id=request.user).exclude(status = Cluster.STATUS_DELETED) 
     for cluster in clusters:
-        node = Nodes.objects.get(cluster_id=cluster.id)
-        query = [dict(field='resource_id', op='eq', value=node.openstack_instance_id), dict(field='meter',op='eq',value='cpu_util')]
+        node = Node.objects.filter(cluster_id=cluster.id)
+        query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='cpu_util')]
         cpu_util_sample = new_samples.list(query)
         list_temp = []
         for each in cpu_util_sample:
@@ -511,8 +511,8 @@ def meters():
             list_temp.append(each.resource_id)
             list_temp.append(each.volume)
             list_temp.append(cluster.cluster_name)
-            arr.append(list_temp)
-        query = [dict(field='resource_id', op='eq', value=node.openstack_instance_id), dict(field='meter',op='eq',value='memory.usage')]
+            cpu_util.append(list_temp)
+        query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='memory.usage')]
         memory_usage_sample = new_samples.list(query)
         list_temp = []
         for each in memory_usage_sample:
@@ -520,7 +520,7 @@ def meters():
             list_temp.append(each.resource_id)
             list_temp.append(each.volume)
             list_temp.append(cluster.cluster_name)
-            arr.append(list_temp)
+            memory_usage.append(list_temp)
 
 
     #output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
