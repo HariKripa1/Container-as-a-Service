@@ -3,7 +3,7 @@ import docker.tls as tls
 class DockerSwarm(object):
 	#path='/Users/kasi-mac/.docker/machine/machines/'
 	def init_manager(self,machine_name,ip_address):
-		cli = Client(base_url='unix://var/run/docker.sock')
+		#cli = Client(base_url='unix://var/run/docker.sock')
 		path='/home/ubuntu/.docker/machine/machines/'
 		print path
 		url='tcp://'+ip_address+':2376'

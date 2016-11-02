@@ -561,12 +561,14 @@ def meters(request):
             query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='cpu_util')]
             cpu_util_sample = cclient.new_samples.list(query,limit=1)
             list_temp = []
+            print 'test'
             for each in cpu_util_sample:
                 list_temp.append(each.timestamp)
                 list_temp.append(each.resource_id)
                 list_temp.append(each.volume)
                 list_temp.append(cluster.cluster_name)
                 cpu_util.append(list_temp)
+                print node.openstack_node_id
             query = [dict(field='resource_id', op='eq', value=node.openstack_node_id), dict(field='meter',op='eq',value='memory.usage')]
             memory_usage_sample = cclient.new_samples.list(query,limit=1)
             list_temp = []

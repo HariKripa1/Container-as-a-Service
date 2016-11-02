@@ -71,6 +71,9 @@ def create_cluster(c):
                 name=data[1]
                 ip=data[2]
                 instance_id=data[3]
+                print ip
+                print name
+                print instance_id
                 if j==0:
                     master='Y'
                     c.master_ip=ip
@@ -105,11 +108,12 @@ def modify_cluster(c):
             print 'if'
             output = subprocess.check_output(['./script/modifySwarm.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(c.no_of_instances),str(c.requested_no_of_instance),str(c.id)])
             print output     
-            nodes=output.split('\n')        
+            nodes=output.split('\n')
+            regex = re.compile('Machine-Information:.*')        
             for i in nodes:
-                n=re.match('Machine-Information:.*',i)
+                n = regex.match(i)
                 if n:
-                    data=match.group()
+                    data=n.group()
                     data=data.split(':')
                     name=data[1]
                     ip=data[2]
@@ -117,6 +121,7 @@ def modify_cluster(c):
                     master='N'
                     print name
                     print ip
+                    print instance_id
                     node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED,openstack_node_id=instance_id)
                     node.save()        
                     c.no_of_instances = c.requested_no_of_instance
