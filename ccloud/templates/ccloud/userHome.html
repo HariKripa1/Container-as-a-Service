@@ -6,12 +6,13 @@
 
 {% block content %}
 <p></p>
+<div class="container">
 Welcome <b>{{ request.session.username }}</b>, what would you like to do?  
   <ul>
   <li><a href="/ccloud/addPage">Create Container</a></li>
   <li><a href="/ccloud/addClusterPage">Create Cluster</a></li>
   </ul>
-
+</div>
 {% endblock %}
 
 

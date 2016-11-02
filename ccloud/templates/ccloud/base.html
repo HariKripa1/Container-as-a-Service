@@ -13,18 +13,16 @@
         {% block css %}
         {% load static %}
           <link rel="stylesheet" type="text/css" href="{% static 'ccloud/mainPage.css' %}" />
-          <script src="{% static 'ccloud/login.js' %}"></script>
+          
         {% endblock %}
     
   </head>
   <body>
    
     <nav class="navbar navbar-light bg-faded">
-  <a class="navbar-brand" href="#">CCloud</a>
+  <a class="navbar-brand" href="/ccloud/userHome">CCloud</a>
   <ul class="nav navbar-nav">
-    <li class="nav-item active">
-      <a class="nav-link" href="/ccloud/userHome">Home </a>
-    </li>
+    
     <li class="nav-item">
       <a class="nav-link" href="/ccloud/mainPage">Conatiners</a>
     </li>
@@ -48,6 +46,9 @@
   </form>
 </nav>
     {% block content%}
+    {% endblock %}
+    {% block script %}
+    <script src="{% static 'ccloud/login.js' %}"></script>
     {% endblock %}
   </body>
 </html>
