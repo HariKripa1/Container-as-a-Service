@@ -1,0 +1,3 @@
+cloud-config
+hostname: ubun
+manage_etc_hosts: true

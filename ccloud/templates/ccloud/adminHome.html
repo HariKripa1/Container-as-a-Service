@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <strong>Welcome {{ username }} </strong> 
+  <br/><br/>
+  <form id="modifyuser" action="/ccloud/admin/modifyuser/" method="post">
+  {% csrf_token %}
+  <table border=1>
+        <tr><td>Select</td><td>User Name</td><td>Project Name</td></tr>
+        {% for u in users %}
+            <tr> 
+                <td> <input type="radio" name="uid" value="{{ u.id }}"></td>                
+                <td> {{ u.username }} </td>  
+                <td> {{ u.projectname }} </td>                
+                <td> {{ u.id }} </id>
+            </tr>        
+        {% endfor %}        
+    </table>
+    <input type="submit" name="Modify" id="Modify" value="Modify" />
+    </form>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 import pika
 import sys
 import os
+import subprocess
 import json
 ##get project directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -80,44 +81,72 @@ def callback(ch, method, properties, body):
     rq = RequestQueue.objects.get(id=body)
     c = rq.container_id
     print(c.devstack_container_id)
-    if c.status == Container.STATUS_FORCREATE:
-        error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
-        if error == False:
-            c.status=Container.STATUS_CREATED
-            c.devstack_container_id=id
-            c.container_url=url
-            c.save()
-        else:
-            c.status=Container.STATUS_CREATE_FAILED
-            c.save()
-    elif c.status == Container.STATUS_FORMODIFY:
-        error = remove_container(c.devstack_container_id)
-        print error
-        if error == False:
-            print 'errr'
-            c.status=Container.STATUS_MODIFY_FAILED
-        else:
-            print 'else'            
+    if c.container_or_service==Container.CONTAINER:
+        if c.status == Container.STATUS_FORCREATE:
             error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
             if error == False:
-                print 'mod'
-                c.status=Container.STATUS_MODIFIED
+                c.status=Container.STATUS_CREATED
                 c.devstack_container_id=id
                 c.container_url=url
                 c.save()
-            else:          
-                print 'else11'
-                c.status=Container.STATUS_MODIFY_FAILED
+            else:
+                c.status=Container.STATUS_CREATE_FAILED
                 c.save()
-    elif c.status == Container.STATUS_FORDELETE:
-        print(str(c.devstack_container_id))
-        error = remove_container(str(c.devstack_container_id))
-        if error == False:
-            c.status=Container.STATUS_DELETE_FAILED
-        else:
-            c.status=Container.STATUS_DELETED
-        c.save()
-        
+        elif c.status == Container.STATUS_FORMODIFY:
+            error = remove_container(c.devstack_container_id)
+            print error
+            if error == False:
+                print 'errr'
+                c.status=Container.STATUS_MODIFY_FAILED
+            else:
+                print 'else'            
+                error,errmsg,id,url = create_container(c.container_name,c.user_id.username,c.git_url)
+                if error == False:
+                    print 'mod'
+                    c.status=Container.STATUS_MODIFIED
+                    c.devstack_container_id=id
+                    c.container_url=url
+                    c.save()
+                else:          
+                    print 'else11'
+                    c.status=Container.STATUS_MODIFY_FAILED
+                    c.save()
+        elif c.status == Container.STATUS_FORDELETE:
+            print(str(c.devstack_container_id))
+            error = remove_container(str(c.devstack_container_id))
+            if error == False:
+                c.status=Container.STATUS_DELETE_FAILED
+            else:
+                c.status=Container.STATUS_DELETED
+            c.save()
+    else:
+        if c.status == Container.STATUS_FORCREATE:
+            output = subprocess.check_output(['./script/CreateService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name),str(c.user_id.username),str(c.git_url),str(c.port)])
+            print outputs
+            regex = re.compile('.*PublishedPort:.*')
+            j = 0
+            nodes=output.split('\n')  
+            for i in nodes:
+            n = regex.match(i)
+            #print n
+            if n:
+                data=n.group()
+                print data
+                data=data.split(':')
+                port=data[1]
+                print 'port: '+port
+                break
+            host_port = 'http://'+str(c.cluster_id.master_ip)+':'+str(port)
+            print host_port
+            c.container_url=host_port
+            c.save()            
+        elif c.status == Container.STATUS_FORMODIFY:
+            output = subprocess.check_output(['./script/scaleService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name),str(c.scale)])
+            print output            
+        elif c.status == Container.STATUS_FORDELETE:    
+            output = subprocess.check_output(['./script/removeService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name)])
+            print output
+         
 channel.basic_consume(callback,
                       queue='reqqueue',
                       no_ack=True)

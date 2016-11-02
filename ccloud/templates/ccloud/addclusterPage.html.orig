@@ -1,0 +1,59 @@
+{% extends "ccloud/base.html" %}
+
+{% block title %}
+      <title>Container Creation</title>
+{% endblock %}
+
+{% block css %}
+            {% load static %}
+          <link rel="stylesheet" type="text/css" href="{% static 'ccloud/mainPage.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container vertical-center" align="center">
+<div class="card col-md-4 col-offset-1">
+<div class="card-header"> Cluster Details </div>
+<div class="card-block">
+ {% if addflg %}
+   <strong> {{ message }} </strong>
+   <a href="/ccloud/mainPage">Return to the homepage.</a><br />
+  {% else %}
+  <form id="addPage" action="/ccloud/addclusterPage/" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}    
+    <input type="submit" name="Add" value="Add Cluster" /> 
+  </form>
+  {% endif %}
+  </div>
+  </div>
+  </div>
+
+{% endblock %}
+
+<!--<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <a href="/ccloud/user/Home">Home</a>
+  <a href="/ccloud/logout">Logout</a>
+  <p> Add cluster </p>
+  {% if addflg %}
+   <strong> {{ message }} </strong>
+   <a href="/ccloud/user/cluster/home/">Return to the homepage.</a><br />
+  {% else %}
+    <strong> {{ message }} </strong>
+    <form id="addclusterPage" action="/ccloud/user/cluster/add/" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}    
+        <input type="submit" name="Add" value="Add Cluster" /> 
+    </form>    
+  {% endif %}
+  </body>
+</html>
+<<<<<<< HEAD
+=======
+-->
+>>>>>>> cssbranch
