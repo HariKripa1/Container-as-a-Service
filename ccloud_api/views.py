@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 import os
 import sys
-from ccloud_api.serializers import UserSerializer, GroupSerializer, ClusterSerializer, ClusterListSerializer
+from ccloud_api.serializers import UserSerializer, GroupSerializer, ClusterSerializer, ClusterListSerializer, ContainerSerializer
 from ccloud_api.permissions import IsOwnerOrReadOnly
 from django.http import Http404
 from rest_framework.views import APIView
@@ -114,6 +114,25 @@ class ClusterDetail(APIView):
         cluster.save()#update instead of insert
         sendClusterReq(str(cluster.id))
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ContainerDetail(APIView):
+    """
+    Retrieve, update or delete a cluster instance.
+    """
+    permission_classes = (IsOwnerOrReadOnly,permissions.IsAuthenticated,)
+    def get_object(self, pk):
+        try:
+            return Container.objects.get(pk=pk)
+        except Container.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        container = self.get_object(pk)
+        if container.user_id == request.user:
+            serializer = ContainerSerializer(container)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 def sendClusterReq(rid):

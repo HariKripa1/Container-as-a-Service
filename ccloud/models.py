@@ -100,6 +100,7 @@ class Node(models.Model):
     master=models.CharField(max_length=1,choices=MASTER_CHOICES)
     machine_name=models.CharField(max_length=200)
     status=models.CharField(max_length=100,choices=STATUS_CHOICES)
+    openstack_node_id=models.CharField(max_length=250)
     def __str__(self):
         return self.cluster_id
     

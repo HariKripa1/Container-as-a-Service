@@ -23,9 +23,9 @@ from .models import Container
 from .models import RequestQueue
 from django.contrib.auth.models import User
 from datetime import datetime
-from keystoneauth1.identity import v2
-from keystoneauth1 import session
-from keystoneclient.v2_0 import client
+#from keystoneauth1.identity import v2
+#from keystoneauth1 import session
+#from keystoneclient.v2_0 import client
 import pika
 import sys
 import os
@@ -321,6 +321,21 @@ def modifyService(request):
             print cors
         return render(request, 'ccloud/modifyPage.html', {'form': form,'cid':c_id,'modifyflg' : modifyflg,'delmodflg' : delmodflg,'cors':cors})
     elif form.is_valid():
+
+        # add in db            
+        #form.cleaned_data['giturl']   
+        c_id = request.POST.get('cid', None)
+        #message = "modification request sent for "+form.cleaned_data['giturl']                     
+        modifyflg = True;
+        user = User.objects.get(username=username)   
+        container = Container.objects.get(id=c_id)
+        #container.container_name=form.cleaned_data['containername']
+        #container.git_url=form.cleaned_data['giturl']
+        #container.user_id=user
+        #container.docker_file='Y'
+        #container.application_name=''
+        #container.port=form.cleaned_data['port']
+
         c_id = request.POST.get('cid', None)
         print c_id
         message = "modification request sent for "
