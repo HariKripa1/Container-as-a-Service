@@ -26,6 +26,7 @@ from datetime import datetime
 #from keystoneauth1.identity import v2
 #from keystoneauth1 import session
 #from keystoneclient.v2_0 import client
+#import ceilometerclient.client
 import pika
 import sys
 import os
@@ -491,7 +492,7 @@ def getmodifyclusterPage(request):
             return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message,'node': node})
     return render(request, 'ccloud/modifyclusterPage.html', {'form': form,'addflg' : addflg,'cid':cid,'modorview':modorview,'message':message})
 
-    @login_required
+@login_required
 def meters():
     #source openrc admin admin
     cpu_util = [[] for _ in range(20)]
