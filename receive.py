@@ -139,13 +139,18 @@ def callback(ch, method, properties, body):
             host_port = 'http://'+str(c.cluster_id.master_ip)+':'+str(port)
             print host_port
             c.container_url=host_port
+            c.status=Container.STATUS_CREATED
             c.save()            
         elif c.status == Container.STATUS_FORMODIFY:
             output = subprocess.check_output(['./script/scaleService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name),str(c.scale)])
-            print output            
+            print output
+            c.status=Container.STATUS_MODIFIED
+            c.save()  
         elif c.status == Container.STATUS_FORDELETE:    
             output = subprocess.check_output(['./script/removeService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name)])
             print output
+            c.status=Container.STATUS_DELETED
+            c.save()  
          
 channel.basic_consume(callback,
                       queue='reqqueue',
