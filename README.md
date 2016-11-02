@@ -68,11 +68,9 @@ Open Application
 Files
 
 	Path	Filename				Purpose																						New/Modified	Comments
-				
-				
-/ccloud/							Web application that provides docker platform as a service		
-				
-			admin.py				Django framework's file to register models													Modified	Registered model for cluster and node
+	
+	/ccloud	
+	        admin.py				Django framework's file to register models													Modified	Registered model for cluster and node
 			apps.py					Django framework's file to register application												Modified	Registered application
 			forms.py				Django framework's file where we define all forms that will be displayed in HTML			Modified	Added forms for cluster management
 			migrations				Django framework's file to store DB															Modified	DB changes
@@ -80,11 +78,9 @@ Files
 			static					Contains CSS files																			New	
 			urls.py					Django framework's file that contains URL mapping with corresponding controller's function	Modified	Mapping for cluster files
 			views.py				Django framework's file that contains business logic										Modified	added controller logic for cluster management
-				
-				
-/ccloud/script/				
-				
-			buildSwarmNext.sh		Shell script to build a cluster for a user who already has a cluster						New	
+	
+	/script	
+	        buildSwarmNext.sh		Shell script to build a cluster for a user who already has a cluster						New	
 			buildSwarm.sh			Shell script to build first cluster for  a user												New	
 			createDockerMachine.sh	Shell script to install docker machine on Nova instance created								New	
 			CreateService.sh		Shell script to create service on Swarm Cluster												New	
@@ -92,9 +88,9 @@ Files
 			modifySwarm.sh			Shell script to modify Swarm cluster which will either add or delete nodes from cluster		New	
 			removeService.sh		Shell script to remove a service															New	
 			scaleService.sh			Shell script to scale a service																New	
-				
-/ccloud/templates/				
-			addclusterPage.html		HTML page for adding a cluster																New	
+    
+    /templates
+	        addclusterPage.html		HTML page for adding a cluster																New	
 			addPage.html			HTML page for adding a service																Modified	Accepted port to deploy service
 			base.html				HTML page which contains common header for all files										New	
 			clusterHome.html		HTML page for showing list of clusters of a user											New	
@@ -106,20 +102,12 @@ Files
 			modifyPage.html			HTML page for modifying a service															Modified	Accepted scale as input to deploy service
 			register.html			HTML page for user registration																Modified	Added openstack keystone registration
 			userHome.html			HTML page to display user home 																Modified	To include cluster list in home page
-				
-				
-/ccloud_api/		Application for RESTful APIs		
-				
+    
+    /ccloud_api/	
 			admin.py				Django framework's file to register models													New	
 			apps.py					Django framework's file to register application												New	
 			migrations				Django framework's file to store DB															New	
 			models.py				Django framework's file to create models for database objects								New	
 			permissions.py			Django Restfulframework's file to configure permissions for user							New	
 			serializers.py			Django Restfulframework's file to serialize model objects of ccloud application				New	
-			views.py				Django Restfulframework's file to define business logic										New	
-
-
-
-
-
-	
+			views.py				Django Restfulframework's file to define business logic										New
