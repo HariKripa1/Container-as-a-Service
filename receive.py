@@ -122,7 +122,24 @@ def callback(ch, method, properties, body):
     else:
         if c.status == Container.STATUS_FORCREATE:
             output = subprocess.check_output(['./script/CreateService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name),str(c.user_id.username),str(c.git_url),str(c.port)])
-            print output
+            print outputs
+            regex = re.compile('.*PublishedPort:.*')
+            j = 0
+            nodes=output.split('\n')  
+            for i in nodes:
+            n = regex.match(i)
+            #print n
+            if n:
+                data=n.group()
+                print data
+                data=data.split(':')
+                port=data[1]
+                print 'port: '+port
+                break
+            host_port = 'http://'+str(c.cluster_id.master_ip)+':'+str(port)
+            print host_port
+            c.container_url=host_port
+            c.save()            
         elif c.status == Container.STATUS_FORMODIFY:
             output = subprocess.check_output(['./script/scaleService.sh',str(c.cluster_id.master_name),str(c.cluster_id.master_ip),str(c.container_name),str(c.scale)])
             print output            
