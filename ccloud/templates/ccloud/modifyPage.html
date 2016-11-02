@@ -1,29 +1,28 @@
-<html>
-  <head>
-    <title></title>
-    <meta content="">
-    <style></style>
-  </head>
-  <body>
-  <a href="/ccloud/user/Home">Home</a>
-  <a href="/ccloud/logout">Logout</a>
-  <p> Modify container {{cid}} </p>  
+{% extends "ccloud/base.html" %}
+
+{% block title %}
+      <title>Modify container</title>
+{% endblock %}
+
+{% block css %}
+            {% load static %}
+            <link rel="stylesheet" type="text/css" href="{% static 'ccloud/mainPage.css' %}" />
+{% endblock %}
+  
+{% block content %}
+<div class="container col-sm-4 push-sm-4">
+<p></p>
+  <p align="center"> Modify container {{cid}} </p> 
   {% if modifyflg %}
-    {% if cors == "c"  %}
-    <strong> {{ delmodflg }} request sent </strong>
-    <a href="/ccloud/user/service/main/">Return to the homepage.</a><br />
-    {% else %}
-        <strong> {{ delmodflg }} request sent </strong>
-        <a href="/ccloud/user/cluster/home/">Return to the homepage.</a><br/>
-    {% endif %}  
+   <strong> {{ delmodflg }} request sent </strong>
+   <a href="/ccloud/mainPage">Return to the homepage.</a>
   {% else %}
-    <form id="modifyPage" action="/ccloud/user/service/modify/" method="post">
+    <form id="modifyPage" action="/ccloud/modifyPage/" method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="hidden" name="cid" id="cid" value="{{cid}}"></input>
-        <input type="hidden" name="cors" value={{cors}} />
-        <input type="submit" name="redeploy" value="Redeploy" /> 
+        <input type="hidden" name="cid" value="{{cid}}"/>
+        <input type="submit" name="redeploy" value="Redeploy"/>
     </form>
   {% endif %}
-  </body>
-</html>
+</div>
+{% endblock %}
