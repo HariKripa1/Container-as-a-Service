@@ -43,5 +43,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^ccloud-api/clusters/$', views.ClusterList.as_view()),
     url(r'^ccloud-api/clusters/(?P<pk>[0-9]+)/$', views.ClusterDetail.as_view()),
+    url(r'^ccloud-api/containers/$', views.ContainerList.as_view()),
+    url(r'^ccloud-api/containers/(?P<pk>[0-9]+)/$', views.ContainerDetail.as_view()),
 ]
 #urlpatterns = format_suffix_patterns(urlpatterns)

@@ -61,12 +61,16 @@ def create_cluster(c):
             output = subprocess.check_output(['./script/buildSwarm.sh',str(openstackuser.username),str(openstackuser.password),str(openstackuser.projectname),str(c.requested_no_of_instance),str(c.id)])
             print output
         nodes=output.split('\n')
+        regex = re.compile('Machine-Information:.*')
         j = 0
         for i in nodes:
-            n=re.match('Machine-Information:(.*),(.*)',i)
+            n = regex.match(i)
             if n:
-                name=n.group(1)
-                ip=n.group(2)
+                data=n.group()
+                data=data.split(':')
+                name=data[1]
+                ip=data[2]
+                instance_id=data[3]
                 if j==0:
                     master='Y'
                     c.master_ip=ip
@@ -75,7 +79,7 @@ def create_cluster(c):
                 else:
                     master='N'
                 j=j+1    
-                node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED)
+                node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED,openstack_node_id=instance_id)
                 node.save()        
                 c.no_of_instances = c.requested_no_of_instance
                 c.save()
@@ -103,14 +107,17 @@ def modify_cluster(c):
             print output     
             nodes=output.split('\n')        
             for i in nodes:
-                n=re.match('Machine-Information:(.*),(.*)',i)
+                n=re.match('Machine-Information:.*',i)
                 if n:
-                    name=n.group(1)
-                    ip=n.group(2)
+                    data=match.group()
+                    data=data.split(':')
+                    name=data[1]
+                    ip=data[2]
+                    instance_id=data[3]
                     master='N'
                     print name
                     print ip
-                    node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED)
+                    node=Node(cluster_id=c,machine_ip=ip,machine_name=name,master=master,status=Node.STATUS_CREATED,openstack_node_id=instance_id)
                     node.save()        
                     c.no_of_instances = c.requested_no_of_instance
                     c.save()

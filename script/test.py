@@ -2,15 +2,18 @@ import subprocess
 import re
 
 output = subprocess.check_output(['/Users/kasi-mac/KasiThings/ASU/projects/Cloud Computing/Caas/script/test.sh'])
-print output
+nodes=output.split('\n')
+print nodes
 regex = re.compile('Machine-Information:.*')
-print regex
-outputs = output.split('\n')
-print outputs
-for line in outputs:
-	match = regex.match(line)
-	if match:
-		data=match.group()
-		data=data.split(':')
-		print 'Name: '+data[1]
-		print 'IP Address: '+data[2]
+j = 0
+for i in nodes:
+    n = regex.match(i)
+    if n:
+        data=n.group()
+        data=data.split(':')
+        name=data[1]
+        ip=data[2]
+        instance_id=data[3]
+        print name
+        print ip
+        print instance_id

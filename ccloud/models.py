@@ -156,7 +156,7 @@ class Container(models.Model):
         (STATUS_MODIFY_FAILED,'Container redeployment failed'),
         (STATUS_DELETE_FAILED,'Container deletion failed')
     )
-    cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE)
+    cluster_id = models.ForeignKey(Cluster, related_name='containers', on_delete=models.CASCADE)
     container_name = models.CharField(max_length=200)
     git_url = models.CharField(max_length=1000)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
