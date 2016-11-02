@@ -8,18 +8,38 @@
   <a href="/ccloud/user/Home">Home</a>
   <a href="/ccloud/logout">Logout</a>
   <p> Cluster List </p>    
+    
     <form id="addclusterPage" action="/ccloud/user/cluster/add/" method="get">
     {% csrf_token %}
     <div>
     <a href="/ccloud/user/cluster/add/">Add cluster</a><br />
     </div>
     </form>
+    
     <form id="delete" action="/ccloud/user/cluster/modify/" method="post">
     {% csrf_token %}
     <div>    
     {% if cluster.count == 0 %}
         <p> No clusters available </p>
     {% else %}
+    
+    {% if user.is_superuser %}
+    
+    <table border=1>
+        <tr><td>Select</td><td>Cluster Name</td><td>Cluster Status</td><td>Number of instances</td></tr>
+        {% for c in cluster %}
+            <tr> 
+                <td> <input type="radio" name="cid" value="{{ c.id }}"></td>                
+                <td>{{c.user_id.username}}</td>                
+                <td>{{c.cluster_name}}</td>                
+                <td>{{c.get_status_display}}</td>                
+                <td>{{c.no_of_instances}}</td>
+            </tr>        
+        {% endfor %}        
+    </table>
+
+    {% else %}
+    
     <table border=1>
         <tr><td>Select</td><td>Cluster ID</td><td>Cluster Name</td><td>Cluster Status</td><td>Number of instances</td></tr>
         {% for c in cluster %}
@@ -27,15 +47,18 @@
                 <td> <input type="radio" name="cid" value="{{ c.id }}"></td>
                 <td>{{c.id}}</td>
                 <td>{{c.cluster_name}}</td>                
-                <td>{{c.status}}</td>                
+                <td>{{c.get_status_display}}</td>                
                 <td>{{c.no_of_instances}}</td>
             </tr>        
         {% endfor %}        
-        </table>
-        <br/>
-        <input type="submit" name="View" id="View" value="View" />
-        <input type="submit" name="Redeploy" id="Redeploy" value="Redeploy" />
-        <input type="submit" name="Delete" id="Delete" value="Delete" />
+    </table>
+    
+    {% endif %}   
+    
+    <br/>
+    <input type="submit" name="View" id="View" value="View" />
+    <input type="submit" name="Redeploy" id="Redeploy" value="Redeploy" />
+    <input type="submit" name="Delete" id="Delete" value="Delete" />
      {% endif %}   
     </div>
     </form>

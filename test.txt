@@ -1,0 +1,50 @@
+ID                         NAME                 IMAGE                                NODE                      DESIRED STATE  CURRENT STATE                     ERROR
+9jjs1dskemcxtxtu7s8apv820  viv_service_3.1      dockertestme/viveksid_viv_service_3  dm-viveksid-9-master      Running        Running 16 minutes ago            
+8j1u1qflvkydqpkxvkt5e35u7   \_ viv_service_3.1  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected 16 minutes ago           "No such image: dockertestme/v…"
+0ke52ycvzvj8isyxud0xb438o  viv_service_3.2      dockertestme/viveksid_viv_service_3  dm-viveksid-9-master      Running        Running less than a second ago    
+3k9emipc2s7jnsi0vcxjv2tiq  viv_service_3.3      dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Ready          Preparing less than a second ago  
+3d7omxvblisrpnrgrzn5ifbqh   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+3mwvocg2ldvks0nchqzifqrf0   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+ascscy482om0w1wkssewfuv1e   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+2p2xvf1fq2wfm6ij87e6sm3kc   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+8d4zkx0dyd4a7oh95g9panbwh   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+4uk5fvglg6zehl54xr5p19gw4   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+7ozsyqbfa83jccbwykz378bvc   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+6md66bzs4jo7mb4be7dup5mz4   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+5n5bivjhd5hdsi7b6qel7f3fz   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+33hu7f22v6ewi8bc3hhedu14b  viv_service_3.4      dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Ready          Preparing less than a second ago  
+6jfbd2pkjrhebgv7f9jw3m64k   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+er0cn2xvs081twzjvq7zu74ct   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+5nto06j2ygnw2btkowehqhudf   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+4tclj40jwct39do7i89tlhqjw   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+7i2z20jkc2wj96be26qc0yad1   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+3v0tggzlyu5h1eaynkhyxf8r5   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+aacbna6dbsam78yd50vmnh442   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+2cjjkxv1bm4eb26maez2qix1a   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+8icfhwzi16q87dqw9mc5kun7b   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago   "No such image: dockertestme/v…"
+4lw89qogn8fhbhc6oa06nmtf7  viv_service_3.5      dockertestme/viveksid_viv_service_3  dm-viveksid-9-master      Running        Running less than a second ago    
+ID                         NAME                 IMAGE                                NODE                      DESIRED STATE  CURRENT STATE                    ERROR
+9jjs1dskemcxtxtu7s8apv820  viv_service_3.1      dockertestme/viveksid_viv_service_3  dm-viveksid-9-master      Running        Running 17 minutes ago           
+8j1u1qflvkydqpkxvkt5e35u7   \_ viv_service_3.1  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected 17 minutes ago          "No such image: dockertestme/v…"
+0ke52ycvzvj8isyxud0xb438o  viv_service_3.2      dockertestme/viveksid_viv_service_3  dm-viveksid-9-master      Running        Running less than a second ago   
+a0u20y70a8db6ukh50l9vs1cb  viv_service_3.3      dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Ready          Accepted less than a second ago  
+aqzb6imlznyek47urepbtmhl4   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+avhtxmc75idh0tuqf2xj3arwj   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+2rg93mv8ar2atf5c526tk6rd5   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+5ylz0exp6yg9hnhsclxicuxdk   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+201t7a9e89wj30l4kwefrwwpv   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+bqubx1dgmgkbsr74kll6on7ye   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+czgj0jcpvpq3tj38ucn0orcob   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+3k9emipc2s7jnsi0vcxjv2tiq   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+3d7omxvblisrpnrgrzn5ifbqh   \_ viv_service_3.3  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+2knjnwci8pccg8kkl3fyd2vvl  viv_service_3.4      dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Ready          Rejected less than a second ago  "No such image: dockertestme/v…"
+9lbjo20xgmzc7ifwrpg9ca5jv   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+9e9wtuid9tcz7msonbuwc9pvy   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+04tq3pkj8q5e7dkiynki9nd3j   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+9c56m7by3o7vytis9wqdxezb0   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+6mbytwhykm8e7c0hikc5ojqum   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+22o8lideat1yp8x49ljh6iehn   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+33hu7f22v6ewi8bc3hhedu14b   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+6jfbd2pkjrhebgv7f9jw3m64k   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+er0cn2xvs081twzjvq7zu74ct   \_ viv_service_3.4  dockertestme/viveksid_viv_service_3  dm-viveksid-9-instance-1  Shutdown       Rejected less than a second ago  "No such image: dockertestme/v…"
+4lw89qogn8fhbhc6oa06nmtf7  viv_service_3.5      dockertestme/viveksid_viv_service_3  dm-viveksid-9-master      Running        Running less than a second ago   
