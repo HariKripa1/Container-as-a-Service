@@ -21,6 +21,7 @@
                 <div class="panel ">
                     <div class="panel-heading">
                         <div class="row">
+			 <b><h1> CCloud </h1></b>
                             <div class="col-xs-6">
                                 <a href="#" class="active" id="login-form-link">Login</a>
                             </div>
@@ -59,8 +60,9 @@
                                         <strong>thank you for registering!</strong>
                                         <a href="/ccloud/">Return to the homepage.</a><br />
                                     {% else %}
-                                    <strong>register here!</strong><br />
-
+                                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
                                     <form id="user_form" method="post" action="/ccloud/register"
                                             enctype="multipart/form-data">
 
@@ -68,8 +70,9 @@
                                         <div class="form-group">
                                         {{ user_form.as_p }}
                                         </div>
-                                        <input type="submit" name="submit" value="Register" />
+                                        <input type="submit" name="submit" value="Register"  tabindex="4" class="form-control btn btn-login"/>
                                     </form>
+					</div></div></div>
                                     {% endif %}
                                 </form>
                             </div>
