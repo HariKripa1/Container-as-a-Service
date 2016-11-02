@@ -1,0 +1,65 @@
+{% extends "ccloud/base.html" %}
+
+{% block title %}
+      <title>Meters</title>
+{% endblock %}
+
+{% block css %}
+            {% load static %}
+          	<link rel="stylesheet" type="text/css" href="{% static 'ccloud/mainPage.css' %}" />
+{% endblock %}
+	
+{% block content %}
+
+{% autoescape on %}
+
+	{% for i in clusters %}
+		<table class="table table-striped table-bordered table-list">
+            <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Instance</td>
+                    <td>usage</td>
+                    <td>price</td>
+                </tr>
+        	</thead>
+        	{% for j in cpu_util %}
+        		{% if j[3]==i.name %}
+        		<tr>
+        			<td>i.name</td>
+        			<td>i[0]</td>
+        			<td>i[1]</td>
+        			<td class="usage">i[2]</td>
+        			<td class="price">
+        		</tr>
+        		{% endif %}
+        	{% endfor %}
+        </table>
+	{% endfor %}
+
+	{% for i in clusters %}
+		<table class="table table-striped table-bordered table-list">
+            <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Instance</td>
+                    <td>usage</td>
+                    <td>price</td>
+                </tr>
+        	</thead>
+        	{% for j in memory_usage %}
+        		{% if j[3]==i.name %}
+        		<tr>
+        			<td>i.name</td>
+        			<td>i[0]</td>
+        			<td>i[1]</td>
+        			<td class="usage">i[2]</td>
+        			<td class="price">
+        		</tr>
+        		{% endif %}
+        	{% endfor %}
+        </table>
+	{% endfor %}	
+
+{% endautoescape %}
+{% endblock %}
