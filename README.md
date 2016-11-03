@@ -35,8 +35,8 @@ Install Django:
 
 * $ pip install virtualenv
 * $ pip install virtualenvwrapper
-* $ pip install Django
-* $ pip install djangorestframework
+* $ pip install Django
+* $ pip install djangorestframework
 
 Install RabbitMQ:
 
@@ -111,3 +111,18 @@ Files
 			permissions.py			Django Restfulframework's file to configure permissions for user							New	
 			serializers.py			Django Restfulframework's file to serialize model objects of ccloud application				New	
 			views.py				Django Restfulframework's file to define business logic										New
+	
+	$HOME
+            ccloud                  Django web application to provide docker as a service                                       Modified        
+            ccloud_api              Django application that contains RESTFul APIs for cluster management                        New
+            db.sqlite3              SQLite Database for our appplication                                                        Modified
+            manage.py               Django framwework's configuration file                                                      Modified
+            README.md               README                                                                                      Modified
+            receiveClusterReq.py    Python script that listens to Cluster request queue and manages nova instances              New
+            receiveDMReq.py         Python script that listens to docker machine create request queue and installs docker       New
+            receive.py              Python script that listens to Service request queue and manages services                    Modified
+            receiveSwarmReq.py      Python script that listens to Swarm cluster request queue and manages swarm cluster         New
+            script                  Folder that contains shell script APIs                                                      New
+            swarm.py                Python script that uses docker swarm python API to manage swarm cluster                     New    
+
+	        
