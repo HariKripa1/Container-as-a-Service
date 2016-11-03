@@ -63,7 +63,9 @@ Note: The script will ask you for id_rsa password: . Enter the password value �
       $ ./devstack/stack.sh
 5. Once the machine is up. Download ubuntu xenial-server-cloudimg-amd64-disk1.img image from http://docs.openstack.org/image-guide/obtain-images.html
 6. Login as openstack admin/123456 and create ubuntu image using the above downloaded images
-
+7. sudo /etc/resolv.conf add nameserver 8.8.8.8
+8. sudo iptables –t nat –A POSTROUTING –o ens3 –j MASQUERADE 
+9. sudo sysctl –w net.ipv4.ip_forward=1
 
 Open Application
 
@@ -81,11 +83,11 @@ Open Application
       $ python manage.py runserver 7000
 7. Open application through browser using URL - http://<HOSTNAME:PORT>/ccloud/
 8. Our RESTAPIs can be accessed from below URLs 
-            GET     - http://<HOSTNAME:PORT>/ccloud-api/clusters
-            POST    - http://<HOSTNAME:PORT>/ccloud-api/clusters/
-            PUT     - http://<HOSTNAME:PORT>/ccloud-api/clusters/<ID>
-            DELETE  - http://<HOSTNAME:PORT>/ccloud-api/clusters/<ID>
-            GET - http://<HOSTNAME:PORT>/users - ADMIN only
+            GET     - http://HOSTNAME:PORT/ccloud-api/clusters/
+            POST    - http://HOSTNAME:PORT/ccloud-api/clusters/
+            PUT     - http://HOSTNAME:PORT/ccloud-api/clusters/ID
+            DELETE  - http:/HOSTNAME:PORT/ccloud-api/clusters/ID
+            GET - http://HOSTNAME:PORT/users - ADMIN only
 9. POST/PUT payloads
 {
 "cluster_name": "restcluster",
