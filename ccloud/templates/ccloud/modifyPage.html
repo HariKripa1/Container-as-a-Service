@@ -17,7 +17,7 @@
    <strong> {{ delmodflg }} request sent </strong>
    <a href="/ccloud/mainPage">Return to the homepage.</a>
   {% else %}
-    <form id="modifyPage" action="/ccloud/modifyPage/" method="post">
+    <form id="modifyPage" action="/ccloud/user/service/modify/" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="hidden" name="cid" value="{{cid}}"/>

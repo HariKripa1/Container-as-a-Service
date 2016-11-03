@@ -261,6 +261,7 @@ def getService(request):
         cors = request.POST['cors']
     except KeyError:
         cors = "c"
+    print 'cors:'+cors
     username=request.session.get('username') 
     user = User.objects.get(username=username)
     if user.is_superuser:
@@ -312,7 +313,10 @@ def getService(request):
         try:
             cid = request.POST['cid']
         except KeyError:
-            cid = "1"
+            cl=Cluster.objects.filter(created_by_admin='Y')[0]
+            cid = str(cl.id)
+            print 'admin cluster'
+            print cid
         try:
             cors = request.POST['cors']
         except KeyError:
@@ -469,12 +473,15 @@ def getaddclusterPage(request):
             context = {'message' : message}         
             addflg = True;    
             print addflg
+            created_by_admin=''
             if user.is_superuser:
-                user = form.cleaned_data['user']            
+                user = form.cleaned_data['user']
+                created_by_admin=Cluster.ADMIN            
             else:
                 user = User.objects.get(username=username)
+                created_by_admin=Cluster.USER
             print user
-            cluster=Cluster(cluster_name=form.cleaned_data['clustername'],user_id=user,status=Cluster.STATUS_FORCREATE,no_of_instances=0,requested_no_of_instance=form.cleaned_data['noOfNodes'],creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username)
+            cluster=Cluster(cluster_name=form.cleaned_data['clustername'],user_id=user,status=Cluster.STATUS_FORCREATE,no_of_instances=0,requested_no_of_instance=form.cleaned_data['noOfNodes'],creation_date=datetime.now(),last_update_date=datetime.now(),created_by=username,created_by_admin=created_by_admin)
             cluster.save()
             sendClusterReq(str(cluster.id))
             return render(request, 'ccloud/addclusterPage.html', {'form': form,'addflg' : addflg,'message':message})
