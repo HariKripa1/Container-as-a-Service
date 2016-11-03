@@ -38,6 +38,22 @@ Install Django:
 * $ pip install Django
 * $ pip install djangorestframework
 
+Install Docker:
+
+1. sudo apt-get update
+2. sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+3. echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+4. sudo apt-get update
+5. apt-cache policy docker-engine
+6. sudo apt-get install -y docker-engine
+7. sudo usermod -aG docker $(whoami)
+
+Install Docker machine:
+
+1. sudo chmod 777 /usr/local/bin
+2. sudo curl -L https://github.com/docker/machine/releases/download/v0.8.2/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
+chmod +x /usr/local/bin/docker-machine
+
 Install RabbitMQ:
 
 1. $ echo 'deb http://www.rabbitmq.com/debian/ testing main' |
@@ -123,6 +139,4 @@ Files
             receive.py              Python script that listens to Service request queue and manages services                    Modified
             receiveSwarmReq.py      Python script that listens to Swarm cluster request queue and manages swarm cluster         New
             script                  Folder that contains shell script APIs                                                      New
-            swarm.py                Python script that uses docker swarm python API to manage swarm cluster                     New    
-
-	        
+            swarm.py                Python script that uses docker swarm python API to manage swarm cluster                     New
