@@ -100,7 +100,7 @@ class Node(models.Model):
     master=models.CharField(max_length=1,choices=MASTER_CHOICES)
     machine_name=models.CharField(max_length=200)
     status=models.CharField(max_length=100,choices=STATUS_CHOICES)
-    openstack_node_id=models.CharField(max_length=250)
+    openstack_node_id=models.CharField(max_length=250,unique=True)
     def __str__(self):
         return self.cluster_id
     
@@ -200,8 +200,8 @@ class RequestQueue(models.Model):
 
 class Price(models.Model):
     
-    instance_id = models.ForeignKey(Cluster, to_field=openstack_node_id, db_column=openstack_node_id, on_delete=models.CASCADE)
+    instance_id = models.ForeignKey(Node, to_field='openstack_node_id', db_column='openstack_node_id', on_delete=models.CASCADE)
     price=models.FloatField()
     def __str__(self):
-        return str(self.container_id)
+        return str(self.id)
 

@@ -14,7 +14,7 @@
 {% autoescape on %}
 
 <p></p>
-    <h2>Your cuurent plan: $ {{ total_price }}</h2>
+    <h2>Your current plan: $ {{ total_price }}</h2>
     <p></p>
 	{% for i in clusters %}
 	<h3>Cluster: {{i.cluster_name}}-CPU Utilization:</h3>
@@ -27,8 +27,7 @@
                     <td>usage</td>
                 </tr>
 </thead>
-        	{% for j in cpu_util %}
-{{j.3}} 	
+        	{% for j in cpu_util %} 	
 			{% ifequal j.3|stringformat:"s" i.cluster_name|stringformat:"s"%}<tr>
         			<td>{{i.cluster_name}}</td>
         			<td>{{j.0}}</td>

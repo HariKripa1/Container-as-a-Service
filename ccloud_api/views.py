@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 import os
 import sys
+import pika
 from ccloud_api.serializers import UserSerializer, GroupSerializer, ClusterSerializer, ClusterListSerializer, ContainerSerializer
 from ccloud_api.permissions import IsOwnerOrReadOnly
 from django.http import Http404

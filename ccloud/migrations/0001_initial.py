@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('master', models.CharField(max_length=1, choices=[('Y', 'Master'), ('N', 'Worker')])),
                 ('machine_name', models.CharField(max_length=200)),
                 ('status', models.CharField(max_length=100, choices=[('STATUS_FORCREATE', 'Creation in progress'), ('STATUS_FORMODIFY', 'Modification in progress'), ('STATUS_FORDELETE', 'Deletion in progress'), ('STATUS_CREATED', 'Created'), ('STATUS_DELETED', 'Delete'), ('STATUS_MODIFIED', 'Modified'), ('STATUS_CREATE_FAILED', 'Node creation failed'), ('STATUS_MODIFY_FAILED', 'Node redeployment failed'), ('STATUS_DELETE_FAILED', 'Node deletion failed'), ('STATUS_DM_CREATED', 'Docker machine created'), ('STATUS_DM_FAILED', 'Docker machine failed'), ('STATUS_SWARM_CREATED', 'Docker swarm created'), ('STATUS_SWARM_FAILED', 'Docker swarm failed')])),
-                ('openstack_node_id', models.CharField(max_length=250)),
+                ('openstack_node_id', models.CharField(unique=True, max_length=250)),
                 ('cluster_id', models.ForeignKey(to='ccloud.Cluster')),
             ],
         ),
@@ -72,6 +72,14 @@ class Migration(migrations.Migration):
                 ('projectname', models.CharField(max_length=200)),
                 ('role', models.CharField(max_length=1, choices=[('A', 'Admin'), ('U', 'User')])),
                 ('user_id', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Price',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('price', models.FloatField()),
+                ('instance_id', models.ForeignKey(to='ccloud.Node', db_column='openstack_node_id', to_field='openstack_node_id')),
             ],
         ),
         migrations.CreateModel(

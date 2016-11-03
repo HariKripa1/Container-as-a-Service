@@ -20,7 +20,7 @@ from .models import Cluster
 from .models import Node
 from .models import Openstack_User
 from .models import Container
-from .models import RequestQueue
+from .models import RequestQueue, Price
 from django.contrib.auth.models import User
 from datetime import datetime
 from keystoneauth1.identity import v2
@@ -580,23 +580,25 @@ def meters(request):
                 list_temp.append(each.resource_id)
                 list_temp.append(each.volume)
                 list_temp.append(cluster.cluster_name)
-                price = float(each.volume)*10;
-                if(Price.objects.get(each.resource_id)):
-                    p = Price.objects.get(each.resource_id)
+                price = float(each.volume);
+                if(Price.objects.filter(instance_id= node)):
+                    p = Price.objects.filter(instance_id=node)[0]
                     if(p.price<price):
                         p.price=price
                         p.save()
                 else:
-                    p = Price(instance_id=each.resource_id,price=price)
+                    p = Price(instance_id= node,price=price)
                     p.save()
 
 
                 list_temp.append(p.price)
                 memory_usage.append(list_temp)
-            p = Price.objects.get(each.resource_id)
-            total += p.price
-        total_price.append(total)
+            if(Price.objects.filter(instance_id= node)):
+            	p = Price.objects.filter(instance_id=node)[0]
+            	total += p.price
+	if total!=0.0:
+        	total_price.append(total)
 
 
     #output = subprocess.check_output(['./script/buildSwarm.sh',str(user.username),str(user.password),str(openstackuser.projectname),str(c.requested_no_of_instance)])
-    return render(request, 'ccloud/meters.html', {'cpu_util':cpu_util,'memory_usage':memory_usage,'clusters':clusters},'total_price':total_price)
+    return render(request, 'ccloud/meters.html', {'cpu_util':cpu_util,'memory_usage':memory_usage,'clusters':clusters,'total_price':total_price})
