@@ -84,6 +84,7 @@ Open Application
             POST    - http://localhost/ccloud-api/clusters/
             PUT     - http://localhost/ccloud-api/clusters/<ID>
             DELETE  - http://localhost/ccloud-api/clusters/<ID>
+
 Files
 
 	Path	Filename				Purpose																						New/Modified	Comments
