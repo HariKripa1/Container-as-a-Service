@@ -70,17 +70,20 @@ Open Application
       $ cd ~/docker
 2. Run receive.py in background
       $ python receive.py &
-2. Run receiveClusterReq.py in background
+3. Run receiveClusterReq.py in background
       $ python receiveClusterReq.py &
-2. Run receiveDMReq.py in background
+4. Run receiveDMReq.py in background
       $ python receiveDMReq.py &
-2. Run receiveSwarmReq.py in background
+5. Run receiveSwarmReq.py in background
       $ python receiveSwarmReq.py &  
-3. Run manage.py
+6. Run manage.py
       $ python manage.py runserver 7000
-4. Open application through browser (Application url: localhost/ccloud )
-
-
+7. Open application through browser using URL - http://localhost/ccloud
+8. Our RESTAPIs can be accessed from below URLs 
+            GET     - http://localhost/ccloud-api/clusters
+            POST    - http://localhost/ccloud-api/clusters/
+            PUT     - http://localhost/ccloud-api/clusters/<ID>
+            DELETE  - http://localhost/ccloud-api/clusters/<ID>
 Files
 
 	Path	Filename				Purpose																						New/Modified	Comments
