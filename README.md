@@ -13,31 +13,6 @@ Clone Application from thothlab.gitlab
 
 * git clone http://gitlab.thothlab.org/kselladu/docker.git
 
-Install devstack:
-
-1. Give execute permission to configDevScript.sh
-      $ sudo chmod +x configDevScript.sh 
-2. Run configDevScript.sh
-      $ ./configDevScript.sh
-Note: The script will ask you for id_rsa password: . Enter the password value “123456” or a password you can remember.
-3. Run the command 
-      $ ./devstack/stack.sh
-4. Once the setup is complete you will be able to log into horizon via “dashboard”. Use URL: http://localhost ; username:”admin”; Password:123456.
-5. Go to key-pairs under “Access and Security” and import key created in file “~/.ssh/id_rsa.pub” 
-6. Modify default security group to allow ingress traffic for IPv4 – ICMP, TCP and SSH
-
-Upgrade pip:
-
-* $ pip install -U pip
-
-
-Install Django:
-
-* $ pip install virtualenv
-* $ pip install virtualenvwrapper
-* $ pip install Django
-* $ pip install djangorestframework
-
 Install Docker:
 
 1. sudo apt-get update
@@ -63,6 +38,32 @@ sudo apt-key add -
 3. $ sudo apt-get update
 4. $ sudo apt-get install rabbitmq-server
 
+Upgrade pip:
+
+* $ pip install -U pip
+
+Install Django:
+
+* $ pip install virtualenv
+* $ pip install virtualenvwrapper
+* $ pip install Django
+* $ pip install djangorestframework
+
+
+
+Install Devstack:
+
+1. Give execute permission to configDevScript.sh
+      $ sudo chmod +x configDevScript.sh 
+2. Run configDevScript.sh
+      $ ./configDevScript.sh
+Note: The script will ask you for id_rsa password: . Enter the password value “123456” or a password you can remember.
+3. Add enable_plugin ceilometer https://git.openstack.org/openstack/ceilometer to local.conf in ~/devstack/ 
+4. Run the command 
+      $ ./devstack/stack.sh
+5. Once the machine is up. Download ubuntu xenial-server-cloudimg-amd64-disk1.img image from http://docs.openstack.org/image-guide/obtain-images.html
+6. Login as openstack admin/123456 and create ubuntu image using the above downloaded images
+
 
 Open Application
 
@@ -78,12 +79,18 @@ Open Application
       $ python receiveSwarmReq.py &  
 6. Run manage.py
       $ python manage.py runserver 7000
-7. Open application through browser using URL - http://localhost/ccloud
+7. Open application through browser using URL - http://<HOSTNAME:PORT>/ccloud/
 8. Our RESTAPIs can be accessed from below URLs 
-            GET     - http://localhost/ccloud-api/clusters
-            POST    - http://localhost/ccloud-api/clusters/
-            PUT     - http://localhost/ccloud-api/clusters/<ID>
-            DELETE  - http://localhost/ccloud-api/clusters/<ID>
+            GET     - http://<HOSTNAME:PORT>/ccloud-api/clusters
+            POST    - http://<HOSTNAME:PORT>/ccloud-api/clusters/
+            PUT     - http://<HOSTNAME:PORT>/ccloud-api/clusters/<ID>
+            DELETE  - http://<HOSTNAME:PORT>/ccloud-api/clusters/<ID>
+            GET - http://<HOSTNAME:PORT>/users - ADMIN only
+9. POST/PUT payloads
+{
+"cluster_name": "restcluster",
+"requested_no_of_instance": 1
+}
 
 Files
 
