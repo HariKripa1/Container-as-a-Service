@@ -13,30 +13,21 @@ Clone Application from thothlab.gitlab
 
 * git clone http://gitlab.thothlab.org/kselladu/docker.git
 
-Install devstack:
+Install Docker:
 
-1. Give execute permission to configDevScript.sh
-      $ sudo chmod +x configDevScript.sh 
-2. Run configDevScript.sh
-      $ ./configDevScript.sh
-Note: The script will ask you for id_rsa password: . Enter the password value “123456” or a password you can remember.
-3. Run the command 
-      $ ./devstack/stack.sh
-4. Once the setup is complete you will be able to log into horizon via “dashboard”. Use URL: http://localhost ; username:”admin”; Password:123456.
-5. Go to key-pairs under “Access and Security” and import key created in file “~/.ssh/id_rsa.pub” 
-6. Modify default security group to allow ingress traffic for IPv4 – ICMP, TCP and SSH
+1. sudo apt-get update
+2. sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+3. echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+4. sudo apt-get update
+5. apt-cache policy docker-engine
+6. sudo apt-get install -y docker-engine
+7. sudo usermod -aG docker $(whoami)
 
-Upgrade pip:
+Install Docker machine:
 
-* $ pip install -U pip
-
-
-Install Django:
-
-* $ pip install virtualenv
-* $ pip install virtualenvwrapper
-* $ pip install Django
-* $ pip install djangorestframework
+1. sudo chmod 777 /usr/local/bin
+2. sudo curl -L https://github.com/docker/machine/releases/download/v0.8.2/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
+chmod +x /usr/local/bin/docker-machine
 
 Install RabbitMQ:
 
@@ -47,6 +38,32 @@ sudo apt-key add -
 3. $ sudo apt-get update
 4. $ sudo apt-get install rabbitmq-server
 
+Upgrade pip:
+
+* $ pip install -U pip
+
+Install Django:
+
+* $ pip install virtualenv
+* $ pip install virtualenvwrapper
+* $ pip install Django
+* $ pip install djangorestframework
+
+
+
+Install Devstack:
+
+1. Give execute permission to configDevScript.sh
+      $ sudo chmod +x configDevScript.sh 
+2. Run configDevScript.sh
+      $ ./configDevScript.sh
+Note: The script will ask you for id_rsa password: . Enter the password value “123456” or a password you can remember.
+3. Add enable_plugin ceilometer https://git.openstack.org/openstack/ceilometer to local.conf in ~/devstack/ 
+4. Run the command 
+      $ ./devstack/stack.sh
+5. Once the machine is up. Download ubuntu xenial-server-cloudimg-amd64-disk1.img image from http://docs.openstack.org/image-guide/obtain-images.html
+6. Login as openstack admin/123456 and create ubuntu image using the above downloaded images
+
 
 Open Application
 
@@ -54,16 +71,26 @@ Open Application
       $ cd ~/docker
 2. Run receive.py in background
       $ python receive.py &
-2. Run receiveClusterReq.py in background
+3. Run receiveClusterReq.py in background
       $ python receiveClusterReq.py &
-2. Run receiveDMReq.py in background
+4. Run receiveDMReq.py in background
       $ python receiveDMReq.py &
-2. Run receiveSwarmReq.py in background
+5. Run receiveSwarmReq.py in background
       $ python receiveSwarmReq.py &  
-3. Run manage.py
+6. Run manage.py
       $ python manage.py runserver 7000
-4. Open application through browser (Application url: localhost/ccloud )
-
+7. Open application through browser using URL - http://<HOSTNAME:PORT>/ccloud/
+8. Our RESTAPIs can be accessed from below URLs 
+            GET     - http://<HOSTNAME:PORT>/ccloud-api/clusters
+            POST    - http://<HOSTNAME:PORT>/ccloud-api/clusters/
+            PUT     - http://<HOSTNAME:PORT>/ccloud-api/clusters/<ID>
+            DELETE  - http://<HOSTNAME:PORT>/ccloud-api/clusters/<ID>
+            GET - http://<HOSTNAME:PORT>/users - ADMIN only
+9. POST/PUT payloads
+{
+"cluster_name": "restcluster",
+"requested_no_of_instance": 1
+}
 
 Files
 
@@ -111,3 +138,16 @@ Files
 			permissions.py			Django Restfulframework's file to configure permissions for user							New	
 			serializers.py			Django Restfulframework's file to serialize model objects of ccloud application				New	
 			views.py				Django Restfulframework's file to define business logic										New
+	
+	$HOME
+            ccloud                  Django web application to provide docker as a service                                       Modified        
+            ccloud_api              Django application that contains RESTFul APIs for cluster management                        New
+            db.sqlite3              SQLite Database for our appplication                                                        Modified
+            manage.py               Django framwework's configuration file                                                      Modified
+            README.md               README                                                                                      Modified
+            receiveClusterReq.py    Python script that listens to Cluster request queue and manages nova instances              New
+            receiveDMReq.py         Python script that listens to docker machine create request queue and installs docker       New
+            receive.py              Python script that listens to Service request queue and manages services                    Modified
+            receiveSwarmReq.py      Python script that listens to Swarm cluster request queue and manages swarm cluster         New
+            script                  Folder that contains shell script APIs                                                      New
+            swarm.py                Python script that uses docker swarm python API to manage swarm cluster                     New
